@@ -1,31 +1,45 @@
-# NOTE: COOP/COEP headers removed — they break Razorpay checkout (iframe blocked).
-# Flutter falls back to dart2js+canvaskit which works without cross-origin isolation.
+# ProtiBowl — Admin App (Subdomain) — cPanel .htaccess
+# Fixes blank white screen / 404 errors on page refresh or direct URL access.
 
-# Security Headers
+# 1. Enforce WebAssembly Security Isolation (Required for Flutter WASM)
 <IfModule mod_headers.c>
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-Content-Type-Options "nosniff"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
-    Header set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
-    Header set X-XSS-Protection "1; mode=block"
+    Header set Cross-Origin-Opener-Policy "same-origin"
+    Header set Cross-Origin-Embedder-Policy "credentialless"
 </IfModule>
 
-# Disable directory listing
-Options -Indexes
-
-# Map WebAssembly MIME-type (Prevents browser compilation rejection)
+# 2. Map WebAssembly & JS MIME types (Prevents browser compilation rejection)
 <IfModule mod_mime.c>
     AddType application/wasm .wasm
-    AddType application/javascript .js
+    AddType application/javascript .js .mjs
 </IfModule>
 
-# Handle Single-Page App (SPA) Routing (Fixes 404 errors on browser refresh)
+# 3. Enable gzip compression for faster load
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json application/wasm
+</IfModule>
+
+# 4. Cache static assets (WASM, JS, images)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType application/wasm "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# 5. Handle Single-Page App (SPA) Routing — ALL routes → index.html
+#    Without this, refreshing /kds or /subs-today returns a cPanel 404.
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-    RewriteRule ^index\.html$ - [L]
+
+    # Skip rewrite for actual files (JS, WASM, images, fonts, etc.)
     RewriteCond %{REQUEST_FILENAME} !-f
+    # Skip rewrite for actual directories
     RewriteCond %{REQUEST_FILENAME} !-d
+    # Skip rewrite for symlinks
     RewriteCond %{REQUEST_FILENAME} !-l
+    # Everything else → index.html
     RewriteRule . /index.html [L]
 </IfModule>
