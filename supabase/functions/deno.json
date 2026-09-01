@@ -1,0 +1,5 @@
+{
+  "//": "Marks supabase/functions as a Deno project so editors resolve Deno globals and remote imports.",
+  "lint": { "rules": { "tags": ["recommended"] } },
+  "imports": {}
+}

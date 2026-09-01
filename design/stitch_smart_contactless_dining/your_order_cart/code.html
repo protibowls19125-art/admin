@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Bistro - Active Order & Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#ffffff",
+                      "on-background": "#1b1c1c",
+                      "on-tertiary-fixed-variant": "#464746",
+                      "surface-bright": "#fbf9f9",
+                      "error": "#ba1a1a",
+                      "primary": "#0a0a0a",
+                      "on-surface": "#1b1c1c",
+                      "outline": "#747878",
+                      "secondary-fixed-dim": "#ffb4a5",
+                      "tertiary-fixed": "#e3e2e0",
+                      "inverse-on-surface": "#f2f0f0",
+                      "surface-container-high": "#e9e8e7",
+                      "secondary-fixed": "#ffdad3",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e4e2e2",
+                      "surface-container-low": "#f5f3f3",
+                      "surface": "#fbf9f9",
+                      "on-secondary-container": "#732010",
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#c8c6c5",
+                      "on-tertiary-container": "#888887",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#212121",
+                      "on-error-container": "#93000a",
+                      "tertiary-container": "#202120",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#303031",
+                      "on-primary-fixed": "#1b1c1c",
+                      "surface-variant": "#e4e2e2",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#c7c6c5",
+                      "on-surface-variant": "#444748",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "on-primary-container": "#898888",
+                      "secondary": "#9f402d",
+                      "surface-container": "#efeded",
+                      "tertiary": "#080a09",
+                      "on-tertiary-fixed": "#1a1c1b",
+                      "primary-fixed": "#e5e2e1",
+                      "on-secondary-fixed": "#3e0500",
+                      "surface-dim": "#dbdad9",
+                      "on-secondary-fixed-variant": "#802918",
+                      "secondary-container": "#fd876f",
+                      "on-primary-fixed-variant": "#474746",
+                      "surface-tint": "#5f5e5e",
+                      "background": "#fbf9f9",
+                      "outline-variant": "#c4c7c7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "20px",
+                      "stack-md": "24px",
+                      "stack-lg": "48px",
+                      "stack-sm": "12px",
+                      "base": "8px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Playfair Display"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Playfair Display"],
+                      "label-md": ["Inter"],
+                      "headline-md": ["Playfair Display"],
+                      "price-display": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "price-display": ["20px", {"lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .progress-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d1d1;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary" data-icon="restaurant">restaurant</span>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary tracking-tight">Modern Bistro</h1>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="text-on-surface-variant font-label-md text-label-md hidden md:block">Table 12</div>
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-20 px-container-padding max-w-4xl mx-auto space-y-stack-lg">
+<!-- Active Order Status Section -->
+<section class="mt-base">
+<div class="bg-surface-container-lowest rounded-xl p-stack-md shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-gutter">
+<div>
+<h2 class="font-headline-md text-headline-md-mobile text-primary">Current Order</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Order #8829 • Placed 12 mins ago</p>
+</div>
+<div class="bg-secondary/10 text-secondary px-3 py-1 rounded-full font-label-md text-label-md">
+                        Preparing
+                    </div>
+</div>
+<!-- Status Tracker -->
+<div class="relative py-gutter">
+<div class="flex justify-between items-center relative z-10">
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined" data-icon="check" style="font-variation-settings: 'FILL' 0;">check</span>
+</div>
+<span class="font-label-md text-label-md text-primary">Received</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-secondary text-on-primary flex items-center justify-center shadow-lg ring-4 ring-secondary/20">
+<span class="material-symbols-outlined" data-icon="skillet" style="font-variation-settings: 'FILL' 1;">skillet</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-bold">Kitchen</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="delivery_dining">delivery_dining</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">On Way</span>
+</div>
+</div>
+<!-- Connecting Lines -->
+<div class="absolute top-1/2 left-0 w-full h-1 bg-surface-container-high -translate-y-[1.7rem] z-0">
+<div class="h-full bg-secondary progress-shimmer" style="width: 50%;"></div>
+</div>
+</div>
+<div class="mt-stack-sm p-base bg-surface-container-low rounded-lg flex items-center gap-base">
+<div class="animate-pulse w-2 h-2 rounded-full bg-secondary"></div>
+<p class="font-body-md text-body-md italic text-on-surface-variant">"Chef Julian is currently searing your Prime Ribeye to perfection."</p>
+</div>
+</div>
+</section>
+<!-- Bento Style Itemized Cart -->
+<section class="space-y-stack-md">
+<div class="flex items-end justify-between">
+<h2 class="font-headline-md text-headline-md-mobile text-primary">Your Cart</h2>
+<span class="text-on-surface-variant font-label-md text-label-md">3 Items</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Cart Items List (8 cols) -->
+<div class="md:col-span-8 space-y-gutter">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex group transition-all hover:shadow-md border border-outline-variant/10">
+<div class="w-24 md:w-32 aspect-square relative overflow-hidden">
+<img class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" data-alt="A macro close-up of a vibrant Mediterranean salad bowl featuring fresh avocado slices, cherry tomatoes, and microgreens. The lighting is soft and natural, emphasizing the organic textures of the vegetables. The background is a clean, minimalist white marble table, aligning with a premium modern bistro aesthetic. Subtle earth tones dominate the palette with pops of bright green and red." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG84NKnN7OPt_BkX_4466x61vGsIANocW1NBiiEwrETLx6pR7a5qqMifBQ8hfHbAQuurEi8dtgh1Y0MUkNMjT0wSheyaFb-Yey5LBhKCyv2eNHHHB8ASweSdnjDmdHR3OTS3jS1tryVM-vVp2uxhB0ygBYXqXxNBCulrjuLxIyBCLu3pOoyhEgHfLf9yq-zUfqJhOSmdVo87AOBz_davI9bqF0uUGa6rWlyC7UAuG5danLz8x0_Wl3odD79C-Ko3GJoC7rJCUY2A"/>
+</div>
+<div class="flex-1 p-gutter flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-label-md text-label-md text-primary">Avocado Harvest Bowl</h3>
+<p class="text-on-surface-variant text-[12px] italic">Extra Lemon Tahini</p>
+</div>
+<span class="font-price-display text-price-display text-primary">$24.00</span>
+</div>
+<div class="flex justify-between items-center mt-base">
+<div class="flex items-center gap-4 bg-surface-container-low rounded-full px-3 py-1">
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="font-label-md text-label-md">1</span>
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete_outline">delete_outline</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex group transition-all hover:shadow-md border border-outline-variant/10">
+<div class="w-24 md:w-32 aspect-square relative overflow-hidden">
+<img class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" data-alt="A gourmet wood-fired pizza with buffalo mozzarella and fresh basil leaves, presented on a rustic dark slate plate. The cheese is slightly bubbling and golden brown. Soft, atmospheric lighting from a nearby bistro window creates warm highlights and deep shadows. The overall mood is sophisticated and artisanal, focusing on high-quality ingredients and professional culinary presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEvwTI61-Gi7p4v78a_QTvsGQdEaqBlxl3apzPzMb5upKzuME3LpPxII1U42YbVSXnFAY7w-Ff1ATKWh2UwyL0gw9-Hk86QZs5BvTMK2r4h10ug9HK5QsX346rzfNBX_TkAvhWlL9RnuJ2LeKcOucvXkXdBmz-EqdVB36bf_3Ne0npe8MfV13ZtKFzFqi-5HLIV1o5ZrZPnLtA4-dfyYfQE2683YlhI3iQPCQqn5kZw4b9Tk1ZCF2D9CKH6PrjgGB-CoRBoms6cA"/>
+</div>
+<div class="flex-1 p-gutter flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-label-md text-label-md text-primary">Truffle Marguerita</h3>
+<p class="text-on-surface-variant text-[12px] italic">Gluten Free Crust</p>
+</div>
+<span class="font-price-display text-price-display text-primary">$32.00</span>
+</div>
+<div class="flex justify-between items-center mt-base">
+<div class="flex items-center gap-4 bg-surface-container-low rounded-full px-3 py-1">
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="font-label-md text-label-md">1</span>
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete_outline">delete_outline</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex group transition-all hover:shadow-md border border-outline-variant/10">
+<div class="w-24 md:w-32 aspect-square relative overflow-hidden">
+<img class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" data-alt="Two handcrafted chocolate glazed donuts topped with crushed hazelnuts, resting on a white ceramic plate. The glaze is glossy and reflects soft studio lighting. The background is a clean and airy cafe setting with light neutral tones. The composition is elegant and minimalist, emphasizing the fine texture of the dessert. Dark chocolate browns contrast beautifully with the pristine white ceramic and soft background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0bU6dDUQoK2FnOse2Ld6PYGA5ZUWsWN0EqExKfpGitt1nqvzlu2qKfoRdousjDE-WYdpcr63WkRO0Ek_0U2gKmWfDGt_ye-SYy-xIPdgegOXlR7NZrxeSDknAoSliNKIi0SLvH9ZjnHvGUKgzh2QFWL4fvdrquRjh6Na1oxVSgEVWXc1IEoUHXAz-HaSSWRxwRHCvaRL5uWBQ2gL1pjVh6Y4TseqdLdwbtDChice-T_p7bgi0LIhb-dDoiOMfdVeJsbS0QNGf2g"/>
+</div>
+<div class="flex-1 p-gutter flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-label-md text-label-md text-primary">Dark Cocoa Glaze</h3>
+<p class="text-on-surface-variant text-[12px] italic">Pack of 2</p>
+</div>
+<span class="font-price-display text-price-display text-primary">$12.00</span>
+</div>
+<div class="flex justify-between items-center mt-base">
+<div class="flex items-center gap-4 bg-surface-container-low rounded-full px-3 py-1">
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="font-label-md text-label-md">1</span>
+<button class="text-secondary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete_outline">delete_outline</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Order Summary (4 cols) -->
+<div class="md:col-span-4">
+<div class="bg-surface-container-lowest rounded-xl p-gutter shadow-sm border border-outline-variant/30 sticky top-24">
+<h3 class="font-label-md text-label-md text-primary mb-gutter border-b border-outline-variant/20 pb-base uppercase tracking-widest">Summary</h3>
+<div class="space-y-base mb-gutter">
+<div class="flex justify-between">
+<span class="text-on-surface-variant font-body-md text-body-md">Subtotal</span>
+<span class="text-primary font-price-display text-price-display">$68.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant font-body-md text-body-md">Tax (8%)</span>
+<span class="text-primary font-price-display text-price-display">$5.44</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant font-body-md text-body-md">Service Fee</span>
+<span class="text-primary font-price-display text-price-display">$2.50</span>
+</div>
+</div>
+<div class="flex justify-between border-t border-primary/10 pt-gutter mb-stack-md">
+<span class="font-headline-md text-headline-md text-primary">Total</span>
+<span class="font-headline-md text-headline-md text-secondary">$75.94</span>
+</div>
+<button class="w-full bg-secondary text-on-primary py-4 rounded-lg font-headline-md text-body-lg font-bold hover:opacity-90 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-base">
+<span>Proceed to Checkout</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-[11px] text-center text-on-surface-variant mt-4 leading-tight uppercase tracking-tighter">Secure checkout by BistroPay™</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Suggested Add-ons (Small Bento Cards) -->
+<section class="space-y-gutter pb-10">
+<h2 class="font-headline-md text-headline-md-mobile text-primary">Perfect Pairings</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="bg-surface-container-low p-base rounded-xl flex items-center gap-base cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="local_bar">local_bar</span>
+</div>
+<div>
+<p class="font-label-md text-[13px] text-primary">Sauvignon Blanc</p>
+<p class="text-secondary text-[12px] font-bold">+$12</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-base rounded-xl flex items-center gap-base cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="ice_cream">icecream</span>
+</div>
+<div>
+<p class="font-label-md text-[13px] text-primary">Vanilla Bean Gelato</p>
+<p class="text-secondary text-[12px] font-bold">+$8</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-base rounded-xl flex items-center gap-base cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="coffee">coffee</span>
+</div>
+<div>
+<p class="font-label-md text-[13px] text-primary">Espresso Roast</p>
+<p class="text-secondary text-[12px] font-bold">+$4</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-base rounded-xl flex items-center gap-base cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="water_full">water_full</span>
+</div>
+<div>
+<p class="font-label-md text-[13px] text-primary">Sparkling Water</p>
+<p class="text-secondary text-[12px] font-bold">+$3</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 backdrop-blur-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-around items-center h-16 px-4 w-full">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:text-secondary transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:text-secondary transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-md text-label-md">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-container font-bold active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+</div>
+</nav>
+<script>
+        // Micro-interaction: Update preparation status text every few seconds
+        const statuses = [
+            "Chef Julian is currently searing your Prime Ribeye to perfection.",
+            "Sous chef is plating your appetizers with care.",
+            "Your main course is under the broiler for a final crisp.",
+            "Garnishes are being prepared to finish your dish."
+        ];
+        let statusIndex = 0;
+        const statusText = document.querySelector('p.italic.text-on-surface-variant');
+
+        if (statusText) {
+            setInterval(() => {
+                statusIndex = (statusIndex + 1) % statuses.length;
+                statusText.style.opacity = '0';
+                setTimeout(() => {
+                    statusText.textContent = `"${statuses[statusIndex]}"`;
+                    statusText.style.opacity = '1';
+                }, 500);
+            }, 8000);
+        }
+
+        // Add subtle animation to the progress bar shimmer
+        const shimmerBar = document.querySelector('.progress-shimmer');
+        if (shimmerBar) {
+            let width = 50;
+            setInterval(() => {
+                if (width < 65) {
+                    width += 0.5;
+                    shimmerBar.style.width = width + '%';
+                }
+            }, 3000);
+        }
+    </script>
+</body></html>

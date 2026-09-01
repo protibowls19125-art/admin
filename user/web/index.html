@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Proti Bowls — contactless dining &amp; ordering.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Proti Bowls">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png"/>
+
+  <title>Proti Bowls</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Razorpay checkout (online payment) -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <!-- Nuke stale service workers BEFORE Flutter loads — prevents the blank
+       white screen caused by old service workers intercepting fetch requests
+       for JSON assets (AssetManifest.bin.json, FontManifest.json) and returning
+       cached HTML instead, which triggers "Unexpected token '<'" JSON parse errors. -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        registrations.forEach(function(registration) {
+          registration.unregister();
+        });
+      });
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          names.forEach(function(name) {
+            caches.delete(name);
+          });
+        });
+      }
+    }
+  </script>
+  <!--
+    Flutter web (CanvasKit) renders into a WebGL canvas. Two things can turn the
+    whole app dark/black when this browser tab is switched away and back:
+
+      1. The tab is backgrounded long enough that the browser drops the WebGL/GPU
+         context ("webglcontextlost"). The canvas can't repaint and comes back
+         black — a reload restores it cleanly.
+
+      2. The tab is simply switched and the context is NOT lost, but Flutter
+         pauses rendering while hidden and doesn't always repaint on return,
+         leaving a stale black canvas. No "webglcontextlost" fires here, so the
+         reload above never triggers.
+
+    For (2), a quick synthetic resize is dispatched first (cheap, no reload —
+    covers most short switches). If the tab was hidden long enough that a
+    resize alone wasn't enough to recover last time, fall back to a reload —
+    cart is persisted to storage, so nothing is lost. A mid-checkout address
+    form (order_form_page.dart) is NOT persisted, so this only reloads after a
+    few seconds hidden, not on every instant alt-tab.
+  -->
+  <script>
+    // Case 1: genuine GPU context loss after long backgrounding.
+    window.addEventListener('webglcontextlost', function () {
+      window.location.reload();
+    }, true);
+
+    // Case 2: tab switch — nudge first, reload if it was hidden long enough
+    // that the nudge alone is unreliable.
+    var hiddenAt = null;
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        hiddenAt = Date.now();
+      } else if (document.visibilityState === 'visible') {
+        // Dispatch multiple resize events to forcefully nudge Flutter to repaint.
+        // We do this over a second because mobile browsers restore WebGL context
+        // at varying speeds after the app comes back to the foreground.
+        // Nudge the engine to repaint using resize events
+        window.dispatchEvent(new Event('resize'));
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 100);
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 500);
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+
+        // Aggressively force the browser to reflow the WebGL canvas
+        // This is specifically needed when returning from Razorpay UPI intents on mobile.
+        setTimeout(function() {
+          var flutterView = document.querySelector('flutter-view') || document.querySelector('canvas');
+          if (flutterView) {
+            var originalDisplay = flutterView.style.display;
+            flutterView.style.display = 'none';
+            flutterView.offsetHeight; // force DOM reflow
+            flutterView.style.display = originalDisplay || 'block';
+          }
+        }, 200);
+
+        // Only reload if the app was backgrounded for a very long time (> 3 minutes).
+        // A short 8-second reload breaks Razorpay UPI payments because the user
+        // goes to their UPI app and comes back!
+        if (hiddenAt && Date.now() - hiddenAt > 180000) {
+          window.location.reload();
+        }
+        hiddenAt = null;
+      }
+    });
+  </script>
+
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

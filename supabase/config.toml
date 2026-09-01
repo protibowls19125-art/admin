@@ -1,0 +1,66 @@
+# Supabase project config (used by the Supabase CLI).
+# project_id = the project ref shown in the dashboard URL.
+project_id = "esiatypehvnyeemvnzbl"
+
+# --- Edge Functions ---------------------------------------------------------
+# These functions are called directly from the browser (Flutter web), so the
+# CORS preflight (OPTIONS) request carries no JWT. With verify_jwt = true the
+# Supabase gateway rejects that preflight with 401 *before* the function runs,
+# which the browser reports as a CORS failure. We disable JWT verification and
+# handle CORS/auth inside the function instead. The Razorpay SECRET still lives
+# only in server-side function secrets — it is never exposed to the client.
+
+[functions.razorpay-create-order]
+verify_jwt = false
+
+[functions.razorpay-verify-payment]
+verify_jwt = false
+
+# Called by Razorpay's servers directly (not the browser) — no Supabase auth
+# header at all. Authenticity is instead the X-Razorpay-Signature check
+# (RAZORPAY_WEBHOOK_SECRET) inside the function.
+[functions.razorpay-webhook]
+verify_jwt = false
+
+[functions.submit-guest-customer]
+verify_jwt = false
+
+# Called by pg_cron (no Supabase auth header, only x-cron-secret) or the
+# admin panel's manual "PUSH TO SHEET NOW" button (which does carry a JWT,
+# checked inside the function). Same reasoning as the functions above.
+[functions.export-orders-to-sheets]
+verify_jwt = false
+
+[functions.export-subscription-meals-to-sheets]
+verify_jwt = false
+
+[functions.export-manual-entries-to-sheets]
+verify_jwt = false
+
+[functions.send-order-push-notification]
+verify_jwt = false
+
+# Called by pg_cron every 5 minutes (x-cron-secret only, no Supabase auth
+# header) or the admin panel's manual "Send now" button (real JWT). Without
+# this, pg_cron's unattended calls 401 at the gateway before ever reaching
+# the function's own x-cron-secret check — the manual button still works
+# either way since it always carries a real JWT, which is why this gap went
+# unnoticed: only the actual automation was silently broken.
+[functions.send-daily-meal-whatsapp]
+verify_jwt = false
+
+[functions.send-food-preference-whatsapp]
+verify_jwt = false
+
+# Meta's webhook calls (GET verification handshake + POST message delivery)
+# carry no Supabase auth header at all — same reasoning as above. Auth here
+# is instead WHATSAPP_VERIFY_TOKEN (handshake) and the optional
+# X-Hub-Signature-256 check (WHATSAPP_APP_SECRET) inside the function.
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+# Called directly by Meta's WhatsApp Flow client (data endpoint for the
+# meal-survey Flow) — no Supabase auth header. Authenticity is instead the
+# RSA/AES encryption handshake itself (WHATSAPP_FLOW_PRIVATE_KEY).
+[functions.whatsapp-flow-endpoint]
+verify_jwt = false

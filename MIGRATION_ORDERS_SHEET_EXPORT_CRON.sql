@@ -1,0 +1,24 @@
+-- =============================================================================
+-- Nightly automation (pg_cron → export-orders-to-sheets edge function).
+-- Same pattern as the existing send-daily-meal-whatsapp job in
+-- SUBSCRIPTION_SETUP.sql. Runs at 02:00 IST = 20:30 UTC (previous day),
+-- off-peak so it doesn't compete with the 20:00 IST meal-reminder job.
+--
+-- SETUP (one time, in the SQL editor):
+--   1. Database → Extensions → enable  pg_cron  and  pg_net  (if not already,
+--      the meal-reminder job needs the same two).
+--   2. If CRON_SECRET isn't already set (it should be, from the subscription
+--      setup):  supabase secrets set CRON_SECRET=<long-random-string>
+--   3. Replace <CRON_SECRET> below with that same value and run:
+
+-- SELECT cron.schedule(
+--   'export-orders-to-sheets',
+--   '30 20 * * *',
+--   $cron$
+--   SELECT net.http_post(
+--     url     := 'https://esiatypehvnyeemvnzbl.supabase.co/functions/v1/export-orders-to-sheets',
+--     headers := '{"Content-Type":"application/json","x-cron-secret":"<CRON_SECRET>"}'::jsonb,
+--     body    := '{"source":"pg_cron"}'::jsonb
+--   );
+--   $cron$
+-- );

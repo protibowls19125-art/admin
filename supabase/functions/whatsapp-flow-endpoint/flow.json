@@ -1,0 +1,193 @@
+{
+  "version": "7.2",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "MEAL": ["PREFERENCE", "SKIP"],
+    "PREFERENCE": ["MIXED_TIME", "SUCCESS"],
+    "MIXED_TIME": ["SUCCESS"]
+  },
+  "screens": [
+    {
+      "id": "MEAL",
+      "title": "Tomorrow's Meal",
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "meal_form",
+            "children": [
+              {
+                "type": "TextHeading",
+                "text": "Do you want tomorrow's meal?"
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "want_meal",
+                "label": "Choose one",
+                "required": true,
+                "data-source": [
+                  { "id": "yes", "title": "Yes, I want it" },
+                  { "id": "no", "title": "No, skip tomorrow" }
+                ]
+              },
+              {
+                "type": "Footer",
+                "label": "Continue",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": { "want_meal": "${form.want_meal}" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SKIP",
+      "title": "No Problem",
+      "terminal": true,
+      "success": true,
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextBody",
+            "text": "Got it — we've marked tomorrow's meal as skipped. See you next time!"
+          },
+          {
+            "type": "Footer",
+            "label": "Done",
+            "on-click-action": { "name": "complete", "payload": {} }
+          }
+        ]
+      }
+    },
+    {
+      "id": "PREFERENCE",
+      "title": "Meal Preference",
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "pref_form",
+            "children": [
+              {
+                "type": "TextHeading",
+                "text": "What's your meal preference?"
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "preference",
+                "label": "Choose one",
+                "required": true,
+                "data-source": [
+                  { "id": "veg", "title": "Veg" },
+                  { "id": "non_veg", "title": "Non-Veg" },
+                  { "id": "mixed", "title": "Mixed" }
+                ]
+              },
+              {
+                "type": "Footer",
+                "label": "Continue",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": { "preference": "${form.preference}" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "MIXED_TIME",
+      "title": "Mealtime Preference",
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "time_form",
+            "children": [
+              {
+                "type": "TextHeading",
+                "text": "Choose veg or non-veg for each mealtime"
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "morning",
+                "label": "Morning",
+                "required": true,
+                "data-source": [
+                  { "id": "veg", "title": "Veg" },
+                  { "id": "non_veg", "title": "Non-Veg" }
+                ]
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "evening",
+                "label": "Evening",
+                "required": true,
+                "data-source": [
+                  { "id": "veg", "title": "Veg" },
+                  { "id": "non_veg", "title": "Non-Veg" }
+                ]
+              },
+              {
+                "type": "Footer",
+                "label": "Submit",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": {
+                    "morning": "${form.morning}",
+                    "evening": "${form.evening}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "All Set",
+      "terminal": true,
+      "success": true,
+      "data": {
+        "summary": {
+          "type": "string",
+          "__example__": "VEG (whole day)"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "You're all set!"
+          },
+          {
+            "type": "TextBody",
+            "text": "${data.summary}"
+          },
+          {
+            "type": "Footer",
+            "label": "Done",
+            "on-click-action": {
+              "name": "complete",
+              "payload": { "summary": "${data.summary}" }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

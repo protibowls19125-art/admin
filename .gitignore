@@ -1,0 +1,23 @@
+# --- Secrets / credentials (safety net for the whole repo) ---
+# Real secret files must never be committed. Templates/examples are allowed.
+credentials/credentials.env
+credentials/*.env
+!credentials/*.template.env
+.env
+*/.env
+**/.env
+!*.env.example
+!**/*.env.example
+
+# --- Local tooling / scratch ---
+.tools/
+.dart_tool/
+**/.dart_tool/
+build/
+**/build/
+BUILD_*/
+node_modules/
+**/node_modules/
+*.log
+*.zip
+.DS_Store

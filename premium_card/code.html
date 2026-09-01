@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"/><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#ffdbc9",
+                    "on-tertiary-container": "#662c00",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-tertiary-fixed": "#321200",
+                    "on-surface-variant": "#4f4634",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2f3130",
+                    "primary": "#795900",
+                    "primary-fixed": "#ffdfa0",
+                    "surface-container-low": "#f4f4f2",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-tertiary-fixed-variant": "#753401",
+                    "background": "#f9f9f7",
+                    "primary-fixed-dim": "#f6be39",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#ec925a",
+                    "inverse-primary": "#f6be39",
+                    "on-primary-fixed": "#261a00",
+                    "on-background": "#1a1c1b",
+                    "on-surface": "#1a1c1b",
+                    "surface-bright": "#f9f9f7",
+                    "outline-variant": "#d3c5ae",
+                    "primary-container": "#d4a017",
+                    "surface-container": "#eeeeec",
+                    "on-primary-container": "#503a00",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#795900",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-container-high": "#e8e8e6",
+                    "secondary": "#5f5e5e",
+                    "outline": "#817662",
+                    "surface-container-highest": "#e2e3e1",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#dadad8",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "secondary-container": "#e2dfde",
+                    "inverse-on-surface": "#f1f1ef",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#5c4300",
+                    "surface": "#f9f9f7",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e2e3e1",
+                    "on-secondary-container": "#636262",
+                    "tertiary": "#934b19"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "12px",
+                    "gutter": "16px",
+                    "container-padding": "20px",
+                    "stack-lg": "24px",
+                    "stack-sm": "4px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Playfair Display"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Playfair Display"],
+                    "headline-xl": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script><style>
+    @keyframes shine {
+        0% { transform: translateX(-150%) skewX(-25deg); }
+        30%, 100% { transform: translateX(250%) skewX(-25deg); }
+    }
+    .animate-shine {
+        animation: shine 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+</style><meta charset="utf-8"/></head><body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed">
+<!-- TopAppBar -->
+<header class="bg-background fixed top-0 w-full z-50 flex justify-between items-center px-container-padding py-stack-md transition-all duration-300">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-headline-md" data-original-icon="restaurant">restaurant</span>
+<h1 class="font-headline-md text-headline-md text-on-surface">Proti Bowls</h1>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden active:scale-95 transition-transform">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young woman with a clean, high-key studio background. She has a polished, professional look consistent with a premium concierge food service. The lighting is soft and flattering, emphasizing a healthy and vibrant lifestyle aesthetic, perfectly matching the Proti Bowls brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFpBgiq5sE4G4oeDvkHwsBLPC4lSP5zToWDz231aBqK68c6oXSdiNzQ1wHUkNTqMvJL98k06xQaIu0WU77AaMiFq9y67JWI84duVVVOYG-pm0ldhbkf6D6An3u-xQ5WzNj4X-LjDXZ6vjAZ63pE2nokiEBNVv1hixZKv5avGWFn1yHblkFvHDJf0C5Cu0PhewHQghnOyY_1mmMJNSJ3ixsDo9hdy7_XRUOxLEe2q4j_XcisXU_61dGzLTo4xBkpifcxGZy9oq0tsY"/>
+</button>
+</header>
+<main class="pt-24 pb-32 px-container-padding max-w-[600px] mx-auto min-h-screen">
+<!-- Welcome Section -->
+<section class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg mb-1">Hello, Sarah</h2>
+<p class="text-on-surface-variant font-body-md">Your healthy habit is looking good.</p>
+</section>
+<!-- Premium Membership Card -->
+<section class="mb-stack-lg">
+<div class="premium-gradient p-gutter rounded-xl shadow-lg relative overflow-hidden text-white" style="background: linear-gradient(135deg, rgb(249, 212, 35) 0%, rgb(212, 160, 23) 50%, rgb(184, 134, 11) 100%); text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px;">
+<!-- Shine Animation Overlay -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-0 h-full w-24 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine"></div>
+</div>
+<!-- Decorative Circle -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl z-0"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-label-sm uppercase tracking-widest">Premium Member</span>
+</div>
+<div class="premium-glass p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">qr_code_2</span>
+</div>
+</div>
+<div class="mb-6 relative z-10">
+<p class="font-label-md opacity-90 mb-1">Meals Remaining</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-[48px] leading-none">14</span>
+<span class="font-headline-md opacity-80">Meals Left</span>
+</div>
+</div>
+<div class="mb-6 relative z-10">
+<div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-white rounded-full" style="width: 70%;"></div>
+</div>
+<div class="flex justify-between mt-2 font-label-sm opacity-80">
+<span class="">16 Consumed</span>
+<span class="">30 Total</span>
+</div>
+</div>
+<div class="flex justify-between items-end relative z-10">
+<div>
+<p class="font-label-sm opacity-80">Total Savings</p>
+<p class="font-headline-md text-white">₹1,450 <span class="font-body-md opacity-80">saved</span></p>
+</div>
+<button class="bg-on-background text-on-primary px-6 py-3 rounded-lg font-label-md active:scale-95 transition-transform">
+                        Manage Plan
+                    </button>
+</div>
+</div>
+</section>
+<!-- Profile Links / Account Actions -->
+<section class="space-y-4">
+<h3 class="font-label-sm text-on-surface-variant uppercase tracking-widest px-1">Account Management</h3>
+<div class="bg-surface-container-lowest rounded-xl divide-y divide-surface-container overflow-hidden">
+<a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<span class="font-body-md text-on-surface font-semibold">Order History</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="font-body-md text-on-surface font-semibold">Payment Methods</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<span class="font-body-md text-on-surface font-semibold">Delivery Addresses</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<span class="font-body-md text-on-surface font-semibold">Settings</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+</div>
+<button class="w-full p-4 text-error font-label-md flex items-center justify-center gap-2 hover:bg-error-container/20 rounded-xl transition-colors mt-8">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Log Out
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface-container-lowest rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-low transition-colors duration-200 tap-highlight-transparent active:scale-90 px-4 py-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-low transition-colors duration-200 tap-highlight-transparent active:scale-90 px-4 py-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-sm text-label-sm">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:bg-surface-container-low transition-colors duration-200 tap-highlight-transparent active:scale-90 px-4 py-1 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-label-sm text-label-sm">Premium</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-low transition-colors duration-200 tap-highlight-transparent active:scale-90 px-4 py-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and subtle scroll effects
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md', 'bg-white/90', 'backdrop-blur-md');
+                header.classList.remove('bg-background');
+            } else {
+                header.classList.remove('shadow-md', 'bg-white/90', 'backdrop-blur-md');
+                header.classList.add('bg-background');
+            }
+        });
+    </script>
+</body></html>

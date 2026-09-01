@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Bistro - Item Detail</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Design System Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "on-background": "#1b1c1c",
+                    "on-tertiary-fixed-variant": "#464746",
+                    "surface-bright": "#fbf9f9",
+                    "error": "#ba1a1a",
+                    "primary": "#0a0a0a",
+                    "on-surface": "#1b1c1c",
+                    "outline": "#747878",
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "tertiary-fixed": "#e3e2e0",
+                    "inverse-on-surface": "#f2f0f0",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e4e2e2",
+                    "surface-container-low": "#f5f3f3",
+                    "surface": "#fbf9f9",
+                    "on-secondary-container": "#732010",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c8c6c5",
+                    "on-tertiary-container": "#888887",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#212121",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#202120",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303031",
+                    "on-primary-fixed": "#1b1c1c",
+                    "surface-variant": "#e4e2e2",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#c7c6c5",
+                    "on-surface-variant": "#444748",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "on-primary-container": "#898888",
+                    "secondary": "#9f402d",
+                    "surface-container": "#efeded",
+                    "tertiary": "#080a09",
+                    "on-tertiary-fixed": "#1a1c1b",
+                    "primary-fixed": "#e5e2e1",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-dim": "#dbdad9",
+                    "on-secondary-fixed-variant": "#802918",
+                    "secondary-container": "#fd876f",
+                    "on-primary-fixed-variant": "#474746",
+                    "surface-tint": "#5f5e5e",
+                    "background": "#fbf9f9",
+                    "outline-variant": "#c4c7c7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "20px",
+                    "stack-md": "24px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px",
+                    "base": "8px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Playfair Display"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Playfair Display"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "price-display": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "price-display": ["20px", {"lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- Top Navigation Anchor (Shared Component Mapping) -->
+<header class="bg-surface/80 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-7xl mx-auto">
+<button class="text-primary active:scale-95 transition-transform" onclick="history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Modern Bistro</h1>
+<div class="text-primary font-label-md">Table 12</div>
+</div>
+</header>
+<main class="pb-32">
+<!-- Hero Section -->
+<section class="relative w-full h-[353px] md:h-[442px] overflow-hidden">
+<img alt="Truffle Gnocchi" class="w-full h-full object-cover" data-alt="A close-up, high-angle gourmet photograph of creamy Truffle Gnocchi served in a shallow white ceramic bowl. The soft, pillowy gnocchi are glazed in a rich, velvety butter sauce and topped with generous shavings of black truffle and fresh micro-greens. The scene is set on a minimalist light-textured stone table, illuminated by soft, diffused natural window light, creating an atmosphere of effortless luxury and appetizing warmth consistent with a modern boutique bistro aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn5b91ekZ-kgpU10IuPG_MMFCt2SkYgAcwBYAOPAao0fKXVHNiRzE6rFPiOY4d_rOh7stgzqPnOLPvC1onELa_iayT6ZRH2ovHJp9egYkxZGWwWV36RQzyVVFCKJ4HCC7qJRyve-iJyLP8Ur418ps_9ZElTmXBMO1KoQsuIjk1RmKADWlFT9WMyrPy1zlwFpEDElkfu4ieHucDviMDFxHEWsnuJA6noftOQhEYon0HhAZiTn4pgBiCcxupeX5Vj8o_FFGIMSnq1w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
+</section>
+<!-- Content Canvas -->
+<div class="px-container-padding -mt-8 relative z-10">
+<div class="bg-surface p-stack-md rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.04)] max-w-3xl mx-auto">
+<!-- Title & Price -->
+<div class="flex justify-between items-start mb-stack-sm">
+<div class="space-y-1">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">Truffle Gnocchi</h2>
+<div class="flex gap-2">
+<span class="bg-surface-container-low text-on-surface-variant font-label-md text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">Vegetarian</span>
+<span class="bg-surface-container-low text-on-surface-variant font-label-md text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">Signature</span>
+</div>
+</div>
+<span class="font-price-display text-price-display text-secondary">$28.00</span>
+</div>
+<!-- Description -->
+<p class="text-on-surface-variant font-body-md leading-relaxed mb-stack-md">
+                    Hand-rolled potato gnocchi served in a delicate brown butter and sage emulsion. Finished with 24-month aged Parmigiano Reggiano and freshly shaved seasonal black truffles.
+                </p>
+<!-- Customization Options -->
+<div class="space-y-stack-md pt-base border-t border-outline-variant">
+<!-- Radio Selection: Cheese -->
+<div>
+<div class="flex justify-between items-center mb-stack-sm">
+<h3 class="font-label-md text-on-background uppercase tracking-widest text-xs">Extra Cheese</h3>
+<span class="text-on-tertiary-container font-label-md text-xs">Optional</span>
+</div>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary cursor-pointer transition-colors group">
+<span class="font-body-md text-on-surface">Extra Parmesan</span>
+<div class="flex items-center gap-3">
+<span class="text-secondary font-price-display text-sm">+$2.50</span>
+<input class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"/>
+</div>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary cursor-pointer transition-colors group">
+<span class="font-body-md text-on-surface">Pecorino Romano</span>
+<div class="flex items-center gap-3">
+<span class="text-secondary font-price-display text-sm">+$2.00</span>
+<input class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"/>
+</div>
+</label>
+</div>
+</div>
+<!-- Radio Selection: Preferences -->
+<div>
+<div class="flex justify-between items-center mb-stack-sm">
+<h3 class="font-label-md text-on-background uppercase tracking-widest text-xs">Dietary Adjustments</h3>
+<span class="text-on-tertiary-container font-label-md text-xs">Optional</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<label class="flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-all active:scale-95">
+<input class="hidden peer" type="checkbox"/>
+<span class="material-symbols-outlined text-outline peer-checked:text-secondary mb-1">no_food</span>
+<span class="font-label-md text-xs text-on-surface-variant peer-checked:text-secondary">No Garlic</span>
+</label>
+<label class="flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-all active:scale-95">
+<input class="hidden peer" type="checkbox"/>
+<span class="material-symbols-outlined text-outline peer-checked:text-secondary mb-1">eco</span>
+<span class="font-label-md text-xs text-on-surface-variant peer-checked:text-secondary">Extra Sage</span>
+</label>
+</div>
+</div>
+<!-- Special Instructions -->
+<div>
+<h3 class="font-label-md text-on-background uppercase tracking-widest text-xs mb-stack-sm">Special Instructions</h3>
+<textarea class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-4 font-body-md focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none min-h-[100px]" placeholder="Any allergies or specific requests?"></textarea>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Actions Bar (Floating Cart Logic) -->
+<footer class="fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] border-t border-outline-variant/30">
+<div class="max-w-7xl mx-auto px-container-padding h-24 flex items-center justify-between gap-gutter">
+<!-- Quantity Selector -->
+<div class="flex items-center bg-surface-container border border-outline-variant rounded-full h-14 px-2">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface active:scale-90 transition-transform" onclick="decrement()">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="w-8 text-center font-price-display font-bold" id="quantity">1</span>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface active:scale-90 transition-transform" onclick="increment()">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- Add to Cart Button -->
+<button class="flex-1 bg-secondary text-on-primary h-14 rounded-full font-label-md text-lg px-gutter flex items-center justify-between active:scale-[0.98] transition-all shadow-md group">
+<span class="uppercase tracking-widest">Add to Order</span>
+<div class="flex items-center gap-2">
+<span class="font-price-display" id="total-price">$28.00</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">shopping_bag</span>
+</div>
+</button>
+</div>
+</footer>
+<!-- Interactive Layer: Feedback -->
+<div class="fixed top-24 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-6 py-3 rounded-full shadow-lg font-label-md opacity-0 pointer-events-none transition-all duration-300 z-[100]" id="toast">
+        Item updated
+    </div>
+<script>
+        let count = 1;
+        const basePrice = 28.00;
+        const qtyDisplay = document.getElementById('quantity');
+        const priceDisplay = document.getElementById('total-price');
+        const toast = document.getElementById('toast');
+
+        function updateDisplay() {
+            qtyDisplay.innerText = count;
+            const total = (count * basePrice).toFixed(2);
+            priceDisplay.innerText = `$${total}`;
+        }
+
+        function increment() {
+            count++;
+            updateDisplay();
+            showToast('Increased quantity');
+        }
+
+        function decrement() {
+            if (count > 1) {
+                count--;
+                updateDisplay();
+                showToast('Decreased quantity');
+            }
+        }
+
+        function showToast(msg) {
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2000);
+        }
+
+        // Add subtle scale interaction for all checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                showToast('Option updated');
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,60 @@
+name: mpro_dining_user
+description: "M·PROTI Dining User — Clerk Auth + Supabase"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web: ^1.1.0
+
+  # Supabase backend
+  supabase_flutter: ^2.5.0
+
+  # Navigation
+  go_router: ^14.2.0
+
+  # State management
+  provider: ^6.1.2
+
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Local storage
+  shared_preferences: ^2.2.2
+
+  # Map-based delivery location picker (OpenStreetMap — no API key)
+  flutter_map: ^7.0.2
+  flutter_map_dragmarker: ^7.0.0
+  latlong2: ^0.9.1
+  geolocator: ^13.0.1
+  http: ^1.2.2
+
+  # Images
+  cached_network_image: ^3.3.1
+
+  # Date/time formatting
+  intl: ^0.20.2
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+  # tel: links on mobile/desktop
+  url_launcher: ^6.3.0
+  razorpay_flutter: ^1.4.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+

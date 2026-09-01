@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "on-background": "#1b1c1c",
+                    "on-tertiary-fixed-variant": "#464746",
+                    "surface-bright": "#fbf9f9",
+                    "error": "#ba1a1a",
+                    "primary": "#0a0a0a",
+                    "on-surface": "#1b1c1c",
+                    "outline": "#747878",
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "tertiary-fixed": "#e3e2e0",
+                    "inverse-on-surface": "#f2f0f0",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e4e2e2",
+                    "surface-container-low": "#f5f3f3",
+                    "surface": "#fbf9f9",
+                    "on-secondary-container": "#732010",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c8c6c5",
+                    "on-tertiary-container": "#888887",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#212121",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#202120",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303031",
+                    "on-primary-fixed": "#1b1c1c",
+                    "surface-variant": "#e4e2e2",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#c7c6c5",
+                    "on-surface-variant": "#444748",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "on-primary-container": "#898888",
+                    "secondary": "#9f402d",
+                    "surface-container": "#efeded",
+                    "tertiary": "#080a09",
+                    "on-tertiary-fixed": "#1a1c1b",
+                    "primary-fixed": "#e5e2e1",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-dim": "#dbdad9",
+                    "on-secondary-fixed-variant": "#802918",
+                    "secondary-container": "#fd876f",
+                    "on-primary-fixed-variant": "#474746",
+                    "surface-tint": "#5f5e5e",
+                    "background": "#fbf9f9",
+                    "outline-variant": "#c4c7c7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "20px",
+                    "stack-md": "24px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px",
+                    "base": "8px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Playfair Display"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Playfair Display"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "price-display": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "price-display": ["20px", {"lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary" data-icon="restaurant">restaurant</span>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary tracking-tight">Modern Bistro</h1>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-on-surface-variant font-label-md px-3 py-1 bg-surface-container rounded-full">Table 12</span>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="mt-16 pt-stack-lg px-container-padding max-w-7xl mx-auto">
+<div class="relative rounded-xl overflow-hidden h-[300px] md:h-[450px] mb-stack-md group">
+<img alt="Signature Dish" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end culinary close-up of a seared scallop dish served on a dark artisanal ceramic plate. The lighting is moody and sophisticated with soft highlights catching the delicate sear on the seafood and the vibrant green of micro-herbs. The background is a blurred, minimalist bistro setting with soft warm tones, reflecting an atmosphere of effortless luxury and professional hospitality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv_l6t2eXtedHGKwUXxM8EkHuVB87mW2j23BbtCHfO0CnMiejtDCwe5PdUYQFbzkm4EDDo-7GqrcqUT8AnfdOPRuv7rH_MOz-4mw10fBsslUNY5kmpSybn6VwUihQXyFLhx40O69kUROZ0CyEzZaunOwvPNX7Zr2neAq9eSDopIF1sjZeqWUfV-KLzefka-HVUDs2cPA51gcfSU_qkkor_2EV3hS5kMVnNXzXRHrTX-d8o3lIrFqBd2W-CMGM3sNl6ypN4LNidow"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-stack-md">
+<span class="text-on-primary font-label-md uppercase tracking-widest mb-base">Featured Creation</span>
+<h2 class="text-on-primary font-headline-lg-mobile md:text-headline-lg">Truffle Infused Scallops</h2>
+</div>
+</div>
+</section>
+<!-- Search & Filters -->
+<section class="px-container-padding max-w-7xl mx-auto mb-stack-md sticky top-16 z-40 bg-background/95 backdrop-blur-sm py-base">
+<div class="flex flex-col md:flex-row gap-gutter items-center">
+<div class="relative w-full md:max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary/10 transition-all font-body-md" placeholder="Search our menu..." type="text"/>
+</div>
+<div class="flex gap-sm overflow-x-auto w-full hide-scrollbar py-2">
+<button class="px-6 py-2 bg-primary text-on-primary rounded-full font-label-md whitespace-nowrap active:scale-95 transition-transform">All</button>
+<button class="px-6 py-2 bg-surface-container text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Starters</button>
+<button class="px-6 py-2 bg-surface-container text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Mains</button>
+<button class="px-6 py-2 bg-surface-container text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Drinks</button>
+<button class="px-6 py-2 bg-surface-container text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Desserts</button>
+</div>
+</div>
+</section>
+<!-- Menu Grid -->
+<main class="px-container-padding max-w-7xl mx-auto">
+<!-- Section: Starters -->
+<div class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md mb-stack-md border-b border-outline-variant pb-base">Starters</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Item 1 -->
+<div class="bg-surface rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group">
+<div class="aspect-[3/2] overflow-hidden">
+<img alt="Burrata Salad" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A beautifully plated heirloom tomato and burrata salad. The creamy white cheese is centered among vibrant red, orange, and yellow tomatoes, drizzled with aged balsamic glaze and bright green basil oil. The image is captured in bright, natural morning light on a white marble table, emphasizing fresh ingredients and a minimalist, appetizing aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATq5ltBlCz4zIbiaxLkUXIGzVFxZ9-Bpg4eXTcmht6p27NsSj1xi0Z-c2n4tuLKsP09DaD-TDOjuVDbEhO37llHohyhq2DIrQzxPftFmMKm_Xj5ADNoWVkhln2d9cDV0coWkKzD6cQUM48sg4PLIXSo7tcTOo8jhF8fHifME_qtS2pHbSlR4WD7-GuESjUttlvw-aPEQXV74n4LHGjL48MWWeKpFmaYYaeJNHVAQWofCVzSjPM1kejB7wACo0svC1u9njlVKrJ0g"/>
+</div>
+<div class="p-stack-md flex flex-col h-full">
+<div class="flex justify-between items-start mb-base">
+<h4 class="font-headline-md text-body-lg">Heirloom Burrata</h4>
+<span class="font-price-display text-price-display text-secondary">$18</span>
+</div>
+<p class="text-on-surface-variant text-body-md mb-stack-sm flex-grow">Aged balsamic, basil crystals, and cold-pressed olive oil.</p>
+<div class="flex flex-wrap gap-base mb-stack-md">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">GF</span>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">V</span>
+</div>
+<button class="w-full py-3 bg-secondary text-on-primary rounded-lg font-label-md active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group">
+<div class="aspect-[3/2] overflow-hidden">
+<img alt="Beef Tartare" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Modern beef tartare presentation featuring finely chopped prime beef topped with a perfect golden egg yolk and delicate edible flowers. The dish is served on a matte charcoal plate with toasted sourdough crisps on the side. The lighting is elegant and directional, creating soft shadows that highlight the textures of the meat and the crispness of the bread." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_jnvE_TsJXtTo7UK6tLUL3ooEzd_tjausZuVwwCF8BX3bP8tI2u7HWaquQ2HQRHSreNix1HUp9UmHA-kdsVR-ua-_lQjBEJZdIRAQyaBJIxu7VOgxPgFSJSQ2i-Gogbhwxei_GlTG8iD9qxJqtHTN2D8nw8vdaX8WXnhRVvPAkmrISj6LO6CC14jd3HeL7Uq4NdzVJUPS5g5J8qSt01TM9fNCLOe1SrFg4z_3Q4lh7tmBAsWcwAvwSuu8YpTAR2haivrxLd-b4Q"/>
+</div>
+<div class="p-stack-md flex flex-col h-full">
+<div class="flex justify-between items-start mb-base">
+<h4 class="font-headline-md text-body-lg">Prime Beef Tartare</h4>
+<span class="font-price-display text-price-display text-secondary">$22</span>
+</div>
+<p class="text-on-surface-variant text-body-md mb-stack-sm flex-grow">Hand-cut tenderloin, quail yolk, and house-made sourdough crisps.</p>
+<div class="flex flex-wrap gap-base mb-stack-md">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">Signature</span>
+</div>
+<button class="w-full py-3 bg-secondary text-on-primary rounded-lg font-label-md active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="bg-surface rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group">
+<div class="aspect-[3/2] overflow-hidden">
+<img alt="Roasted Carrots" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A vibrant plate of honey-roasted heirloom carrots in shades of deep purple, bright orange, and pale yellow. They are served over a bed of creamy whipped feta, topped with toasted pistachios and fresh dill. The composition is artistic and minimalist, set against a light-toned wood surface with soft, diffused daylight creating a healthy, upscale aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5IjcYMA2QwFIWYMscFG1fZNCI6lqMahuAbsJ-eaH2C2MUO2qvOa4FTPkph8uS2YRhb60ukq8FMfzG5hrExETzJntslOT_OPyn6PGf6T8VedWixhZUjqk1GqNQ1JpLwF6bES55TqdGv2WSQKyRL1ec_K5TBVhmZQTQStZmrsrVTfwfmeXBz0_6VHVECSIpAZ9tuoYCdM52hkORg3k3bQyeqoIUS0EnWimw4qkAZOuWBUdK3GX4iiAiiSTyWIwCUkUBovO7b3Qplw"/>
+</div>
+<div class="p-stack-md flex flex-col h-full">
+<div class="flex justify-between items-start mb-base">
+<h4 class="font-headline-md text-body-lg">Maple Glazed Carrots</h4>
+<span class="font-price-display text-price-display text-secondary">$14</span>
+</div>
+<p class="text-on-surface-variant text-body-md mb-stack-sm flex-grow">Whipped ricotta, toasted pistachios, and mint oil.</p>
+<div class="flex flex-wrap gap-base mb-stack-md">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">V</span>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">GF</span>
+</div>
+<button class="w-full py-3 bg-secondary text-on-primary rounded-lg font-label-md active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Mains -->
+<div class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md mb-stack-md border-b border-outline-variant pb-base">Mains</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-gutter">
+<!-- Main 1 -->
+<div class="flex flex-col md:flex-row bg-surface rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)] group">
+<div class="w-full md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden">
+<img alt="Dry Aged Ribeye" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A perfectly cooked, thick-cut dry-aged ribeye steak, resting with a beautiful crust and glistening with herb butter. It is served alongside roasted garlic cloves and a sprig of charred rosemary on a heavy, hand-crafted ceramic plate. The overall mood is luxurious and indulgent, with deep warm lighting that emphasizes the rich textures and premium quality of the meat." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWazX5iE_khDfrSYSvsaCBXqgt4EzRh5qtawWhXy1JHVxtVeRfkQGhOXNyoC4spu7M3jmQb2fLRrtCSQ4ly6QRQLvWtfFgIKlMcA6Pl_ocKt4Wu1n_uxFxfW-xZZLD6dE8aoXXt_dcIVDJG9yorripHtgG94VyR54gdQrnRMBvJgxF2PEK6DkYgMhxrfRltS-juzHIMktadmraQ-cQYT6byZVhyOufqf0wBTTMrG8OYmJzh72rfd41Jo0scLBtQCmcUJx2A3cC3g"/>
+</div>
+<div class="p-stack-md flex flex-col justify-between w-full md:w-1/2">
+<div>
+<div class="flex justify-between items-start mb-base">
+<h4 class="font-headline-md text-headline-md">Dry-Aged Ribeye</h4>
+<span class="font-price-display text-price-display text-secondary">$52</span>
+</div>
+<p class="text-on-surface-variant text-body-md mb-stack-sm">30-day aged, served with roasted marrow and red wine reduction.</p>
+<div class="flex flex-wrap gap-base mb-stack-md">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">Chef's Choice</span>
+</div>
+</div>
+<button class="w-full py-3 bg-secondary text-on-primary rounded-lg font-label-md active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+<!-- Main 2 -->
+<div class="flex flex-col md:flex-row bg-surface rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)] group">
+<div class="w-full md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden">
+<img alt="Roasted Salmon" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A pan-seared Atlantic salmon fillet with crispy skin, served on a bed of bright green pea purée and adorned with shaved radish and micro-greens. The plate is white and minimalist, allowing the vibrant colors of the food to pop. The lighting is crisp and clean, reflecting a high-end, contemporary dining experience centered on fresh, seasonal seafood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzTEeGBUZcuSyf69oTeAn4TZQa6jRvfb62UYE8PTS8MQJLlZA4zbEGyZuJ3BcYsSN2WYeiO-8QLECbzOR9agSlMh6Ez5QI2BDNKsJ7L1cEx6X81b4dTgxu3NgJGkI1YUEbMIvcf1LJ-5-9iGqgrRzp4R7LpCC8kjem3frEGytVO2_oqKjxssB6oMj7Fnie3auIAKOQ7KPrNKM0RoQXyOrsJUtH9Ermr9xUusm2KuOjyhPDNLq-4hJ6GJqUnAmeKXZcE1hi6EL5gA"/>
+</div>
+<div class="p-stack-md flex flex-col justify-between w-full md:w-1/2">
+<div>
+<div class="flex justify-between items-start mb-base">
+<h4 class="font-headline-md text-headline-md">Pan-Seared Salmon</h4>
+<span class="font-price-display text-price-display text-secondary">$38</span>
+</div>
+<p class="text-on-surface-variant text-body-md mb-stack-sm">Sustainably sourced, served with sweet pea purée and radish slaw.</p>
+<div class="flex flex-wrap gap-base mb-stack-md">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase">GF</span>
+</div>
+</div>
+<button class="w-full py-3 bg-secondary text-on-primary rounded-lg font-label-md active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Cart Bar (Task-focused Persistent Bar) -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-50 transition-all duration-300 transform" id="cart-bar">
+<div class="bg-primary/95 backdrop-blur-lg text-on-primary p-4 rounded-2xl shadow-xl flex justify-between items-center px-6">
+<div class="flex items-center gap-gutter">
+<div class="relative">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+<span class="absolute -top-2 -right-2 bg-secondary text-on-primary text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-primary">2</span>
+</div>
+<div>
+<p class="font-label-md text-on-primary/70">2 Items</p>
+<p class="font-price-display">$70.00</p>
+</div>
+</div>
+<button class="bg-on-primary text-primary px-6 py-2 rounded-xl font-label-md hover:bg-secondary hover:text-on-primary transition-colors active:scale-95">
+                View Cart
+            </button>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 backdrop-blur-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-around items-center h-16 px-4 w-full">
+<a class="flex flex-col items-center justify-center text-secondary font-bold transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-label-md text-label-md">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-md text-label-md">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple Interaction logic
+        const cartBar = document.getElementById('cart-bar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            // Show/Hide cart bar on scroll
+            if (currentScroll > 100) {
+                cartBar.classList.remove('translate-y-32', 'opacity-0');
+                cartBar.classList.add('translate-y-0', 'opacity-100');
+            } else {
+                cartBar.classList.add('translate-y-32', 'opacity-0');
+                cartBar.classList.remove('translate-y-0', 'opacity-100');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Initialize state
+        cartBar.classList.add('translate-y-32', 'opacity-0');
+
+        // Add to cart click animation
+        document.querySelectorAll('button').forEach(btn => {
+            if(btn.innerText.includes('Add to Cart')) {
+                btn.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span> Added';
+                    this.classList.remove('bg-secondary');
+                    this.classList.add('bg-on-tertiary-fixed-variant');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.add('bg-secondary');
+                        this.classList.remove('bg-on-tertiary-fixed-variant');
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+</body></html>
