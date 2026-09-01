@@ -34,6 +34,7 @@ class _SubscriptionTodayPageState extends State<SubscriptionTodayPage>
     p.fetchEditors(); // delivery agents for the PREPARED tab
     p.fetchFoodPreferences(); // dietary categories for the "edit response" dialog
     p.fetchMealLibrary(); // dish catalog for the "edit response" dialog
+    p.fetchManualEntries();
     p.startAutoRefresh();
     _tabs.addListener(() {
       if (mounted) setState(() {});
@@ -86,12 +87,20 @@ class _SubscriptionTodayPageState extends State<SubscriptionTodayPage>
       SubscriptionAdminProvider p, Map<String, dynamic> m) async {
     final sub = (m['subscriptions'] as Map?)?.cast<String, dynamic>() ?? {};
     final manual = (m['manual_subscription_entries'] as Map?)?.cast<String, dynamic>() ?? {};
+    final manualEntry = (manual.isEmpty && m['manual_entry_id'] != null)
+        ? (p.manualEntries.isNotEmpty
+            ? p.manualEntries.firstWhere(
+                (e) => e['id'] == m['manual_entry_id'],
+                orElse: () => const {},
+              )
+            : const {})
+        : manual;
     final subscriptionId = m['subscription_id'] as String?;
     final reply = (m['reply_text'] as String?)?.trim() ?? '';
     final rawName = (sub['customer_name'] as String?)?.trim() ??
-        (manual['customer_name'] as String?)?.trim() ??
+        (manualEntry['customer_name'] as String?)?.trim() ??
         (reply.isNotEmpty && reply.toLowerCase() != 'manual entry' ? reply : '');
-    final isManual = manual.isNotEmpty || (m['manual_entry_id'] != null) || m['subscription_id'] == null;
+    final isManual = manualEntry.isNotEmpty || (m['manual_entry_id'] != null) || m['subscription_id'] == null;
     final customerName = rawName.isNotEmpty ? rawName : (isManual ? 'Walk-in Customer' : 'Member');
     final mealId = m['id'] as String;
     final replyText = (m['reply_text'] ?? '').toString();
@@ -571,12 +580,23 @@ class _SubscriptionTodayPageState extends State<SubscriptionTodayPage>
       SubscriptionAdminProvider p, bool isManager, Map<String, dynamic> m) {
     final sub = (m['subscriptions'] as Map?)?.cast<String, dynamic>() ?? {};
     final manual = (m['manual_subscription_entries'] as Map?)?.cast<String, dynamic>() ?? {};
+    final manualEntry = (manual.isEmpty && m['manual_entry_id'] != null)
+        ? (p.manualEntries.isNotEmpty
+            ? p.manualEntries.firstWhere(
+                (e) => e['id'] == m['manual_entry_id'],
+                orElse: () => const {},
+              )
+            : const {})
+        : manual;
     final reply = (m['reply_text'] as String?)?.trim() ?? '';
     final rawName = (sub['customer_name'] as String?)?.trim() ??
-        (manual['customer_name'] as String?)?.trim() ??
+        (manualEntry['customer_name'] as String?)?.trim() ??
         (reply.isNotEmpty && reply.toLowerCase() != 'manual entry' ? reply : '');
-    final isManual = manual.isNotEmpty || (m['manual_entry_id'] != null) || m['subscription_id'] == null;
+    final isManual = manualEntry.isNotEmpty || (m['manual_entry_id'] != null) || m['subscription_id'] == null;
     final customerName = rawName.isNotEmpty ? rawName : (isManual ? 'Walk-in Customer' : 'Member');
+    final phone = (sub['phone'] as String?)?.trim() ??
+        (manualEntry['phone'] as String?)?.trim() ??
+        '';
     final id = m['id'] as String;
     final pref = (sub['food_preference'] ?? '') as String;
     final deliveryTime = (m['delivery_time'] ?? '') as String;
@@ -598,237 +618,361 @@ class _SubscriptionTodayPageState extends State<SubscriptionTodayPage>
       }
     }
 
-    final hasMultipleDishes = dishNames.length > 1;
+    final priority = (m['priority'] as num?)?.toInt() ?? 2;
+    final isSelected = _selected.contains(id);
+
+    // Build subtitle / preference line
+    final countText = mealCountOverride != null
+        ? '$mealCountOverride MEALS'
+        : (dishNames.length > 1 ? '${dishNames.length} MEALS' : null);
+
+    String details = '';
+    if (isManual) {
+      final planStr = (manualEntry['plan_name'] as String?)?.trim() ?? '';
+      details = planStr.isNotEmpty ? '$planStr (Manual Entry)' : 'Manual Entry';
+    } else {
+      if (pref == 'mixed') {
+        final mPref = (sub['morning_preference'] ?? '—').toString().replaceAll('_', '-').toUpperCase();
+        final ePref = (sub['evening_preference'] ?? '—').toString().replaceAll('_', '-').toUpperCase();
+        details = 'MIXED · Morning: $mPref, Evening: $ePref';
+      } else if (pref.isNotEmpty) {
+        details = pref.replaceAll('_', '-').toUpperCase();
+      } else {
+        details = 'No preference on file';
+      }
+    }
+
+    final subtitleParts = [
+      details,
+      if (countText != null) countText,
+      if (phone.isNotEmpty) phone,
+    ];
+    final subtitleText = subtitleParts.join(' · ');
+
+    final healthNotes = ((sub['health_notes'] as String?) ??
+            (manualEntry['notes'] as String?) ??
+            '')
+        .trim();
+
+    final indent = isManager ? 32.0 : 0.0;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: isManager
-            ? Checkbox(
-                value: _selected.contains(id),
-                onChanged: (v) => setState(() {
-                  if (v == true) {
-                    _selected.add(id);
-                  } else {
-                    _selected.remove(id);
-                  }
-                }),
-              )
-            : null,
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(customerName,
-                  style: GoogleFonts.chivo(fontWeight: FontWeight.w800),
-                  overflow: TextOverflow.ellipsis),
-            ),
-            if (isManual) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.blue[100],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text('MANUAL',
-                    style: GoogleFonts.chivo(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.blue[900])),
-              ),
-            ],
-            if (sub['is_test'] == true) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.purple[100],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text('TEST',
-                    style: GoogleFonts.chivo(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.purple[900])),
-              ),
-            ],
-          ],
+      margin: const EdgeInsets.only(bottom: 10),
+      elevation: 1.5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: isSelected ? Colors.black87 : Colors.grey[200]!,
+          width: isSelected ? 1.5 : 1,
         ),
-        subtitle: Column(
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              (isManual
-                      ? ((manual['plan_name'] as String?)?.isNotEmpty == true
-                          ? '${manual['plan_name']} (Manual Entry)'
-                          : 'Manual Entry')
-                      : (pref == 'mixed'
-                          ? 'MIXED · Morning: '
-                              '${(sub['morning_preference'] ?? '—').toString().replaceAll('_', '-').toUpperCase()}'
-                              ', Evening: '
-                              '${(sub['evening_preference'] ?? '—').toString().replaceAll('_', '-').toUpperCase()}'
-                          : (pref.isEmpty
-                              ? 'No preference on file'
-                              : pref.replaceAll('_', '-').toUpperCase()))) +
-                  (mealCountOverride != null ? ' · $mealCountOverride MEALS' : ''),
-              style: GoogleFonts.inter(fontSize: 12),
-            ),
-            if (hasMultipleDishes) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[200]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (int i = 0; i < dishNames.length; i++) ...[
-                      if (i > 0) const Divider(height: 10, thickness: 0.5),
-                      Row(
-                        children: [
-                          const Icon(Icons.restaurant,
-                              size: 13, color: Colors.blueGrey),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              dishNames[i],
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          InkWell(
-                            onTap: () => _pickDeliveryTime(
-                              p,
-                              id,
-                              p.getDishDeliveryTime(deliveryTime, i),
-                              dishIndex: i,
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: Colors.blue[200]!),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.schedule,
-                                      size: 12, color: Colors.blue),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    p
-                                            .getDishDeliveryTime(
-                                                deliveryTime, i)
-                                            .isEmpty
-                                        ? 'SET TIME'
-                                        : p.getDishDeliveryTime(
-                                            deliveryTime, i),
-                                    style: GoogleFonts.chivo(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.blue[900],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+            // ── Row 1: Checkbox + Customer Name + Badges + Edit Button ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (isManager) ...[
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Checkbox(
+                      value: isSelected,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      onChanged: (v) => setState(() {
+                        if (v == true) {
+                          _selected.add(id);
+                        } else {
+                          _selected.remove(id);
+                        }
+                      }),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      Text(
+                        customerName,
+                        style: GoogleFonts.chivo(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                        ),
                       ),
+                      if (isManual)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[100],
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'MANUAL',
+                            style: GoogleFonts.chivo(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.blue[900],
+                            ),
+                          ),
+                        ),
+                      if (sub['is_test'] == true)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.purple[100],
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'TEST',
+                            style: GoogleFonts.chivo(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.purple[900],
+                            ),
+                          ),
+                        ),
+                      if (priority == 1)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red[100],
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'P1 HIGH',
+                            style: GoogleFonts.chivo(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.red[900],
+                            ),
+                          ),
+                        ),
                     ],
+                  ),
+                ),
+                if (isManager)
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 18, color: Colors.black54),
+                    tooltip: "Edit response",
+                    constraints: const BoxConstraints(),
+                    padding: const EdgeInsets.all(4),
+                    onPressed: () => _editResponseDialog(p, m),
+                  ),
+              ],
+            ),
+
+            // ── Row 2: Subtitle / Plan & Preference line ──────────────
+            Padding(
+              padding: EdgeInsets.only(left: indent, top: 2),
+              child: Text(
+                subtitleText,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+
+            // ── Optional Note / Health Notes / Message ────────────────
+            if (healthNotes.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Padding(
+                padding: EdgeInsets.only(left: indent),
+                child: Text(
+                  'Note: $healthNotes',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Dishes & Delivery Times Section ───────────────────────
+            if (dishNames.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.only(left: indent),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (int i = 0; i < dishNames.length; i++) ...[
+                        if (i > 0) const Divider(height: 12, thickness: 0.5),
+                        Row(
+                          children: [
+                            const Icon(Icons.restaurant,
+                                size: 14, color: Colors.blueGrey),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                dishNames[i],
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () => _pickDeliveryTime(
+                                p,
+                                id,
+                                p.getDishDeliveryTime(deliveryTime, i),
+                                dishIndex: i,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[50],
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: Colors.blue[200]!),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.schedule,
+                                        size: 12, color: Colors.blue),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      p
+                                              .getDishDeliveryTime(
+                                                  deliveryTime, i)
+                                              .isEmpty
+                                          ? 'SET TIME'
+                                          : p.getDishDeliveryTime(
+                                              deliveryTime, i),
+                                      style: GoogleFonts.chivo(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.blue[900],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ] else ...[
+              // Single meal without explicit named dishes
+              const SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.only(left: indent),
+                child: Row(
+                  children: [
+                    Builder(builder: (_) {
+                      final displayTime =
+                          p.getDishDeliveryTime(deliveryTime, 0);
+                      return InkWell(
+                        onTap: () => _pickDeliveryTime(p, id, displayTime,
+                            dishIndex: 0),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.blue[200]!),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.schedule,
+                                  size: 12, color: Colors.blue),
+                              const SizedBox(width: 4),
+                              Text(
+                                displayTime.isEmpty
+                                    ? 'SET TIME'
+                                    : displayTime,
+                                style: GoogleFonts.chivo(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.blue[900],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
-            ] else if (dishNames.isNotEmpty) ...[
-              const SizedBox(height: 2),
-              Text(dishNames.join(', '),
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: Colors.blueGrey[700])),
             ],
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isManager) ...[
-              _priorityControl(
-                priority: (m['priority'] as num?)?.toInt() ?? 2,
-                onChanged: (newPrio) => p.setPriority(id, newPrio),
-              ),
-              const SizedBox(width: 6),
-              IconButton(
-                icon: const Icon(Icons.edit, size: 18, color: Colors.black54),
-                tooltip: "Edit response",
-                onPressed: () => _editResponseDialog(p, m),
-              ),
-            ],
-            if (!hasMultipleDishes)
-              Builder(builder: (_) {
-                final displayTime = p.getDishDeliveryTime(deliveryTime, 0);
-                return InkWell(
-                  onTap: () => _pickDeliveryTime(p, id, displayTime, dishIndex: 0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue[100]!),
+
+            // ── Row 4: Priority Selector & PUSH Button ────────────────
+            const SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  if (isManager) ...[
+                    _priorityControl(
+                      priority: priority,
+                      onChanged: (newPrio) => p.setPriority(id, newPrio),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.schedule, size: 14, color: Colors.blue),
-                        const SizedBox(width: 4),
-                        Text(displayTime.isEmpty ? 'SET TIME' : displayTime,
-                            style: GoogleFonts.chivo(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.blue[900])),
-                      ],
+                  ],
+                  const Spacer(),
+                  if (isManager)
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        final err = await p.pushToKitchen([id]);
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(err ?? 'Pushed to kitchen ✅'),
+                            backgroundColor:
+                                err == null ? Colors.green[700] : Colors.red[700],
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.send, size: 13),
+                      label: Text('PUSH',
+                          style: GoogleFonts.chivo(
+                              fontSize: 11, fontWeight: FontWeight.w800)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
                     ),
-                  ),
-                );
-              }),
-            if (isManager) ...[
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final err = await p.pushToKitchen([id]);
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(err ?? 'Pushed to kitchen ✅'),
-                      backgroundColor:
-                          err == null ? Colors.green[700] : Colors.red[700],
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.send, size: 13),
-                label: Text('PUSH',
-                    style: GoogleFonts.chivo(
-                        fontSize: 11, fontWeight: FontWeight.w800)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black87,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
