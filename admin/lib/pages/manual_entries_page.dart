@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,8 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
 
   // ── Order details ──────────────────────────────────────────────────────────
   String? _selectedPlanName;
-  double _amount = 0;
+  int _amount = 0;
+  final _amountCtrl = TextEditingController();
   String _paymentMethod = 'cod'; // cod | prepaid
   final _instructionsCtrl = TextEditingController();
   bool _isBusy = false;
@@ -65,6 +67,7 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     _searchCtrl.dispose();
     _instructionsCtrl.dispose();
     _dishSearchCtrl.dispose();
+    _amountCtrl.dispose();
     super.dispose();
   }
 
@@ -89,6 +92,11 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     }
     if (_dishQty.isEmpty) {
       _toast('Please select at least one dish', ok: false);
+      return;
+    }
+    // Prepaid orders do NOT mandate amount. Only COD orders require an amount.
+    if (_paymentMethod == 'cod' && _amount <= 0) {
+      _toast('Please enter COD collection amount', ok: false);
       return;
     }
     setState(() => _isBusy = true);
@@ -135,6 +143,7 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
         _isNewCustomer = false;
         _selectedPlanName = null;
         _amount = 0;
+        _amountCtrl.clear();
         _paymentMethod = 'cod';
         _categoryFilter = null;
         _dishSearchCtrl.clear();
@@ -738,8 +747,10 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
                           final plan = p.plans.firstWhere(
                               (pl) => pl['name'] == v,
                               orElse: () => {});
-                          _amount =
-                              (plan['price'] as num?)?.toDouble() ?? 0;
+                          final price =
+                              (plan['price'] as num?)?.round() ?? 0;
+                          _amount = price;
+                          _amountCtrl.text = price > 0 ? '$price' : '';
                         }
                       });
                     },
@@ -755,12 +766,16 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Amount
+                // Amount (Integer only, optional for prepaid)
                 SizedBox(
-                  width: 80,
+                  width: 95,
                   child: TextField(
+                    controller: _amountCtrl,
                     decoration: InputDecoration(
-                      labelText: '₹ Amt',
+                      labelText:
+                          _paymentMethod == 'cod' ? '₹ Amt *' : '₹ Amt',
+                      hintText:
+                          _paymentMethod == 'prepaid' ? 'Opt' : '0',
                       isDense: true,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -768,12 +783,10 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
                           horizontal: 8, vertical: 10),
                     ),
                     keyboardType: TextInputType.number,
-                    controller: TextEditingController(
-                        text: _amount > 0
-                            ? _amount.toStringAsFixed(0)
-                            : ''),
-                    onChanged: (v) =>
-                        _amount = double.tryParse(v) ?? 0,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    onChanged: (v) => _amount = int.tryParse(v) ?? 0,
                     style: GoogleFonts.chivo(fontSize: 14),
                   ),
                 ),
