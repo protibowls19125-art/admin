@@ -34,7 +34,9 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
   // ── Dishes ─────────────────────────────────────────────────────────────────
   /// Selected dish ids → quantity.
   final Map<String, int> _dishQty = {};
-  String? _prefFilter; // null = show all
+  String? _categoryFilter; // null = show all categories
+  final _dishSearchCtrl = TextEditingController();
+  String _dishSearchQuery = '';
 
   // ── Order details ──────────────────────────────────────────────────────────
   String? _selectedPlanName;
@@ -62,6 +64,7 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     _phoneCtrl.dispose();
     _searchCtrl.dispose();
     _instructionsCtrl.dispose();
+    _dishSearchCtrl.dispose();
     super.dispose();
   }
 
@@ -133,6 +136,9 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
         _selectedPlanName = null;
         _amount = 0;
         _paymentMethod = 'cod';
+        _categoryFilter = null;
+        _dishSearchCtrl.clear();
+        _dishSearchQuery = '';
       });
       // Refresh customer list to include the just-added one
       p.fetchExistingCustomers();
@@ -146,12 +152,20 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     final p = context.watch<SubscriptionAdminProvider>();
     final activeDishes =
         p.mealLibrary.where((d) => d['active'] != false).toList();
-    final filtered = _prefFilter == null
-        ? activeDishes
-        : activeDishes
-            .where((d) =>
-                (d['food_preference'] ?? '').toString() == _prefFilter)
-            .toList();
+    final filtered = activeDishes.where((d) {
+      if (_categoryFilter != null && _categoryFilter!.isNotEmpty) {
+        final cat = (d['category'] ?? '').toString().trim();
+        if (cat.toLowerCase() != _categoryFilter!.toLowerCase()) return false;
+      }
+      if (_dishSearchQuery.isNotEmpty) {
+        final name = (d['name'] ?? '').toString().toLowerCase();
+        final cat = (d['category'] ?? '').toString().toLowerCase();
+        if (!name.contains(_dishSearchQuery) && !cat.contains(_dishSearchQuery)) {
+          return false;
+        }
+      }
+      return true;
+    }).toList();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -181,8 +195,8 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
           // ── Customer section ──────────────────────────────────────────
           _customerSection(p),
           const Divider(height: 1),
-          // ── Dish preference filter tabs ───────────────────────────────
-          _prefTabs(p),
+          // ── Category filter section ───────────────────────────────────
+          _categorySection(p, activeDishes),
           // ── Dish grid ────────────────────────────────────────────────
           Expanded(child: _dishGrid(p, filtered)),
           // ── Bottom bar ───────────────────────────────────────────────
@@ -353,45 +367,152 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     );
   }
 
-  // ── Food preference filter tabs ──────────────────────────────────────────
+  // ── Category filter tabs & search ───────────────────────────────────────
 
-  Widget _prefTabs(SubscriptionAdminProvider p) {
+  Widget _categorySection(
+      SubscriptionAdminProvider p, List<Map<String, dynamic>> activeDishes) {
+    final categories = p.mealCategories;
+
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _filterChip('ALL', null),
-            ...p.foodPreferences.map((f) {
-              final key = f['key'] as String;
-              final label = (f['label'] as String?) ?? key;
-              return _filterChip(label.toUpperCase(), key);
-            }),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Search box
+          SizedBox(
+            height: 36,
+            child: TextField(
+              controller: _dishSearchCtrl,
+              onChanged: (v) =>
+                  setState(() => _dishSearchQuery = v.trim().toLowerCase()),
+              style: GoogleFonts.inter(fontSize: 13),
+              decoration: InputDecoration(
+                hintText: 'Search dishes...',
+                hintStyle:
+                    GoogleFonts.inter(fontSize: 12, color: Colors.grey[500]),
+                prefixIcon: const Icon(Icons.search, size: 18),
+                suffixIcon: _dishSearchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 16),
+                        onPressed: () {
+                          _dishSearchCtrl.clear();
+                          setState(() => _dishSearchQuery = '');
+                        },
+                        padding: EdgeInsets.zero,
+                      )
+                    : null,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.black87),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Category chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _categoryChip(
+                  label: 'ALL',
+                  count: activeDishes.length,
+                  isSelected: _categoryFilter == null,
+                  onTap: () => setState(() => _categoryFilter = null),
+                ),
+                ...categories.map((cat) {
+                  final count = activeDishes
+                      .where((d) =>
+                          (d['category'] ?? '').toString().toLowerCase() ==
+                          cat.toLowerCase())
+                      .length;
+                  return _categoryChip(
+                    label: cat.toUpperCase(),
+                    count: count,
+                    isSelected:
+                        _categoryFilter?.toLowerCase() == cat.toLowerCase(),
+                    onTap: () => setState(() {
+                      _categoryFilter =
+                          _categoryFilter?.toLowerCase() == cat.toLowerCase()
+                              ? null
+                              : cat;
+                    }),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _filterChip(String label, String? prefKey) {
-    final selected = _prefFilter == prefKey;
+  Widget _categoryChip({
+    required String label,
+    required int count,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
-      child: FilterChip(
-        label: Text(label,
-            style: GoogleFonts.chivo(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: selected ? Colors.white : Colors.black87,
-            )),
-        selected: selected,
-        selectedColor: Colors.black87,
-        checkmarkColor: Colors.white,
-        backgroundColor: Colors.grey[200],
-        onSelected: (_) => setState(() => _prefFilter = prefKey),
-        visualDensity: VisualDensity.compact,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.black87 : Colors.grey[100],
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected ? Colors.black87 : Colors.grey[300]!,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.chivo(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? Colors.white : Colors.black87,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white24 : Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '$count',
+                  style: GoogleFonts.chivo(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: isSelected ? Colors.white : Colors.grey[800],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -429,8 +550,6 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
     final imageUrl = dish['image_url'] as String?;
     final qty = _dishQty[id] ?? 0;
     final isSelected = qty > 0;
-    final pref =
-        (dish['food_preference'] ?? '').toString().replaceAll('_', '-');
 
     return Container(
       decoration: BoxDecoration(
@@ -464,7 +583,7 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
                   : _dishImageFallback(),
             ),
           ),
-          // Name + pref badge
+          // Name + category badge
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: Column(
@@ -477,13 +596,53 @@ class _ManualEntriesPageState extends State<ManualEntriesPage> {
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
                         color: Colors.black87)),
-                if (pref.isNotEmpty)
-                  Text(pref.toUpperCase(),
-                      style: GoogleFonts.chivo(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey[500],
-                          letterSpacing: 0.5)),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    if ((dish['category'] ?? '').toString().isNotEmpty &&
+                        dish['category'] != 'General')
+                      Expanded(
+                        child: Text(
+                          dish['category'].toString().toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.chivo(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.blueGrey[600],
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                    if ((dish['badge'] ?? '').toString().isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: dish['badge'].toString().contains('NON')
+                              ? Colors.red[50]
+                              : Colors.green[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: dish['badge'].toString().contains('NON')
+                                ? Colors.red[200]!
+                                : Colors.green[200]!,
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Text(
+                          dish['badge'].toString(),
+                          style: GoogleFonts.chivo(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w800,
+                            color: dish['badge'].toString().contains('NON')
+                                ? Colors.red[700]
+                                : Colors.green[700],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
           ),

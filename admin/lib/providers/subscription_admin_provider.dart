@@ -273,6 +273,16 @@ class SubscriptionAdminProvider extends ChangeNotifier {
 
   // ── Meal library + daily schedule (customizable meal plan) ────────────────
 
+  List<String> get mealCategories {
+    final cats = <String>{};
+    for (final m in mealLibrary) {
+      final c = (m['category'] as String?)?.trim();
+      if (c != null && c.isNotEmpty) cats.add(c);
+    }
+    final sorted = cats.toList()..sort();
+    return sorted;
+  }
+
   Future<void> fetchMealLibrary() async {
     try {
       final rows = await _client
@@ -280,7 +290,36 @@ class SubscriptionAdminProvider extends ChangeNotifier {
           .select()
           .order('sort_order')
           .order('name');
-      mealLibrary = (rows as List).cast<Map<String, dynamic>>();
+      final list = (rows as List).cast<Map<String, dynamic>>();
+
+      // Enrich with category from menu_items if not already present
+      try {
+        final menuRows = await _client
+            .from('menu_items')
+            .select('name, category, badge');
+        final catMap = <String, Map<String, dynamic>>{};
+        for (final m in (menuRows as List)) {
+          final n = (m['name'] as String?)?.toLowerCase().trim();
+          if (n != null && n.isNotEmpty) {
+            catMap[n] = m as Map<String, dynamic>;
+          }
+        }
+        for (final d in list) {
+          final n = (d['name'] as String?)?.toLowerCase().trim();
+          if (n != null && catMap.containsKey(n)) {
+            final match = catMap[n]!;
+            d['category'] ??= match['category'];
+            d['badge'] ??= match['badge'];
+          }
+          d['category'] ??= 'General';
+        }
+      } catch (_) {
+        for (final d in list) {
+          d['category'] ??= 'General';
+        }
+      }
+
+      mealLibrary = list;
       error = null;
     } catch (e) {
       error = 'Could not load meal library: $e';
