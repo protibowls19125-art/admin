@@ -24,6 +24,7 @@ import 'pages/subscription_today_page.dart';
 import 'pages/subscription_settings_page.dart';
 import 'pages/gym_membership_settings_page.dart';
 import 'pages/staff_page.dart';
+import 'pages/manual_entries_page.dart';
 
 Future<String?> _authGuard(BuildContext context, GoRouterState state) async {
   final loc = state.matchedLocation;
@@ -192,6 +193,10 @@ final router = GoRouter(
     GoRoute(
       path: '/subs-today',
       builder: (context, state) => const ExitGuard(child: SubscriptionTodayPage()),
+    ),
+    GoRoute(
+      path: '/subs-manual',
+      builder: (context, state) => const ExitGuard(child: ManualEntriesPage()),
     ),
     GoRoute(
       path: '/subs-settings',

@@ -241,6 +241,12 @@ class _SubscriptionDashboardPageState
                 ),
                 const SizedBox(height: 12),
                 _MenuButton(
+                  label: 'MANUAL ENTRIES',
+                  icon: Icons.edit_note,
+                  onTap: () => context.go('/subs-manual'),
+                ),
+                const SizedBox(height: 12),
+                _MenuButton(
                   label: 'KITCHEN DISPLAY',
                   icon: Icons.soup_kitchen,
                   onTap: () => context.go('/subs-kitchen'),

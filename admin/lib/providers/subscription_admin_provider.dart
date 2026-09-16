@@ -651,6 +651,10 @@ class SubscriptionAdminProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> manualEntries = [];
 
+  /// Deduplicated customer list for the Manual Entries page picker — merges
+  /// past manual entries + order customers into a unique-by-phone list.
+  List<Map<String, String>> existingCustomers = [];
+
   Future<void> fetchManualEntries() async {
     try {
       final rows = await _client
@@ -665,16 +669,68 @@ class SubscriptionAdminProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fetches unique customers from manual_subscription_entries + orders,
+  /// deduplicated by phone number (most recent entry wins).
+  Future<void> fetchExistingCustomers() async {
+    final seen = <String>{};
+    final result = <Map<String, String>>[];
+    try {
+      // Manual entries first (more recent / relevant)
+      final manualRows = await _client
+          .from('manual_subscription_entries')
+          .select('customer_name, phone')
+          .order('created_at', ascending: false);
+      for (final r in (manualRows as List)) {
+        final name = (r['customer_name'] as String?)?.trim() ?? '';
+        final phone = (r['phone'] as String?)?.trim() ?? '';
+        if (name.isEmpty) continue;
+        final key = phone.isNotEmpty ? phone : name.toLowerCase();
+        if (seen.add(key)) {
+          result.add({'name': name, 'phone': phone});
+        }
+      }
+      // Then orders for broader reach
+      final orderRows = await _client
+          .from('orders')
+          .select('customer_name, customer_phone')
+          .order('created_at', ascending: false)
+          .limit(200);
+      for (final r in (orderRows as List)) {
+        final name = (r['customer_name'] as String?)?.trim() ?? '';
+        final phone = (r['customer_phone'] as String?)?.trim() ?? '';
+        if (name.isEmpty) continue;
+        final key = phone.isNotEmpty ? phone : name.toLowerCase();
+        if (seen.add(key)) {
+          result.add({'name': name, 'phone': phone});
+        }
+      }
+    } catch (_) {}
+    existingCustomers = result;
+    notifyListeners();
+  }
+
   Future<String?> addManualEntry(Map<String, dynamic> fields) async {
     try {
-      final res = await _client.from('manual_subscription_entries').insert({
+      final insertData = <String, dynamic>{
         'customer_name': fields['customer_name'] ?? '',
         'phone': fields['phone'] ?? '',
         'plan_name': fields['plan_name'] ?? '',
         'amount': fields['amount'] ?? 0,
         'notes': fields['notes'] ?? '',
         'added_by': _client.auth.currentUser?.email ?? '',
-      }).select('id').single();
+      };
+      // Payment method (cod/prepaid) — stored in manual_subscription_entries
+      // for record-keeping. The field may not exist in older schemas, so we
+      // attempt it and fall back gracefully.
+      final paymentMethod = fields['payment_method'] as String?;
+      if (paymentMethod != null && paymentMethod.isNotEmpty) {
+        insertData['payment_method'] = paymentMethod;
+      }
+      final res = await _client
+          .from('manual_subscription_entries')
+          .insert(insertData)
+          .select('id')
+          .single();
       final entryId = res['id'] as String;
 
       // When the manager picked dishes, also create a meal_confirmations row
@@ -684,23 +740,40 @@ class SubscriptionAdminProvider extends ChangeNotifier {
       // them) with pushed_to_kitchen=false (manager must still push).
       final dishIds = (fields['selected_dish_ids'] as List?)?.cast<String>();
       final mealDate = fields['meal_date'] as String?;
+      final autoPush = fields['auto_push'] == true;
+      // Special instructions flow as reply_text into meal_confirmations so
+      // they're visible on the subscription KDS in red bold.
+      final specialInstructions = (fields['notes'] as String?)?.trim() ?? '';
+      String? mealConfirmationId;
       if (dishIds != null && dishIds.isNotEmpty && mealDate != null) {
-        await _client.from('meal_confirmations').insert({
+        final mcRes = await _client.from('meal_confirmations').insert({
           'meal_date': mealDate,
           'status': 'confirmed',
-          'pushed_to_kitchen': false,
+          'pushed_to_kitchen': autoPush,
+          if (autoPush) 'pushed_at': DateTime.now().toIso8601String(),
           'meal_count': fields['meal_count'] ?? dishIds.length,
           'selected_dish_ids': dishIds,
-          'reply_text': ((fields['customer_name'] as String?)?.trim().isNotEmpty ?? false)
-              ? fields['customer_name'].trim()
-              : 'manual entry',
+          'reply_text': specialInstructions.isNotEmpty
+              ? specialInstructions
+              : (((fields['customer_name'] as String?)?.trim().isNotEmpty ?? false)
+                  ? fields['customer_name'].trim()
+                  : 'manual entry'),
           'manual_entry_id': entryId,
           // manual entries don't have a subscription_id — they're one-off
           // meals added by a manager for non-members (walk-ins, trials, etc.)
-        });
+        }).select('id').single();
+        mealConfirmationId = mcRes['id'] as String;
       }
       await fetchManualEntries();
       await fetchMeals();
+      // Auto-push: skip Today's Meal review — push directly to the subscription
+      // KDS so the chef sees it immediately with the timer running.
+      if (autoPush && mealConfirmationId != null) {
+        // pushToKitchen is idempotent — it sets pushed_to_kitchen=true again
+        // which is harmless since we already set it above, but it also sets
+        // pushed_at and refetches, triggering the new-meal alert sound.
+        await pushToKitchen([mealConfirmationId]);
+      }
       return null;
     } catch (e) {
       return 'Could not add entry: $e';

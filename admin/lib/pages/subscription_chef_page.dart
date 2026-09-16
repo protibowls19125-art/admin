@@ -765,21 +765,73 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
                         );
                       }),
                     ],
-                  if (replyText.isNotEmpty)
+                  // Special instructions / reply text — manual entry notes are
+                  // displayed in RED BOLD so the chef can't miss them.
+                  if (replyText.isNotEmpty &&
+                      replyText.toLowerCase() != 'manual entry' &&
+                      replyText.toLowerCase() != customerName.toLowerCase())
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text('📝 $replyText',
-                          style: GoogleFonts.inter(
-                              fontSize: 12.5,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.indigo[800])),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.red[200]!),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.warning_amber_rounded,
+                                size: 16, color: Colors.red[800]),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                replyText,
+                                style: GoogleFonts.chivo(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.red[900],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   if (notes.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text('⚠ $notes',
-                          style: GoogleFonts.inter(
-                              fontSize: 12, color: Colors.deepOrange[800])),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.red[200]!),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.notes_rounded,
+                                size: 16, color: Colors.red[800]),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                notes,
+                                style: GoogleFonts.chivo(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.red[900],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   const SizedBox(height: 6),
                   Row(

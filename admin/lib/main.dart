@@ -1,8 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'services/supabase_service.dart';
 import 'services/shared_orders_service.dart';
 import 'providers/auth_provider.dart';
@@ -15,6 +14,11 @@ import 'providers/gym_membership_admin_provider.dart';
 import 'providers/staff_admin_provider.dart';
 import 'theme/app_theme.dart';
 import 'router.dart';
+
+// Firebase imports — only used on web. On Android, the push notification
+// service uses Supabase Realtime + flutter_local_notifications instead.
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 /// Admin app entry point
 Future<void> main() async {
@@ -29,7 +33,15 @@ Future<void> main() async {
   // flutter_dotenv caused 403 errors on web hosting (Apache blocks dotfiles).
   await SupabaseService.initialize();
   await SharedOrdersService().init();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Firebase is web-only. On Android, notifications are handled natively via
+  // Supabase Realtime + flutter_local_notifications (see
+  // push_notification_service_io.dart). There is no google-services.json for
+  // Android, so Firebase.initializeApp would fail on non-web platforms.
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
 
   runApp(const MPROTIDiningAdminApp());
 }
