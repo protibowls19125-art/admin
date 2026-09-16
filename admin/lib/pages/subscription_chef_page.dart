@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/subscription_admin_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/kds_empty_state.dart';
-import '../utils/new_order_sound.dart';
 
 /// Subscription kitchen/prep view — split out of the former combined
 /// subscription_kds_page.dart. Confirmed meals for the selected date, sorted
@@ -25,14 +24,6 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs = TabController(length: 2, vsync: this);
 
-  // New-meal alert — same ringtone/behavior as the main Kitchen Display
-  // (kds_page.dart): loops until the chef taps CONFIRM to acknowledge.
-  final NewOrderSound _newMealSound = NewOrderSound();
-
-  /// True after the chef taps CONFIRM to silence the alert. Reset when a
-  /// genuinely new meal arrives (onNewMeal fires again).
-  bool _soundAcknowledged = false;
-
   /// Timer to periodically refresh KDS elapsed timers (⏱ Xm)
   Timer? _tickTimer;
 
@@ -40,8 +31,6 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
   void initState() {
     super.initState();
     final p = context.read<SubscriptionAdminProvider>();
-    p.onNewMeal = _playNewMealSound;
-    p.addListener(_stopSoundIfNothingPending);
     p.fetchMeals();
     p.fetchMealLibrary(); // to resolve selected_dish_ids into names/descriptions
     p.startAutoRefresh();
@@ -53,42 +42,11 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
     });
   }
 
-  void _playNewMealSound() {
-    if (!mounted) return;
-    try {
-      _soundAcknowledged = false; // new arrival — show CONFIRM again
-      _newMealSound.play(loop: true);
-      if (mounted) setState(() {});
-    } catch (_) {
-      // Ignore audio failures — a silent KDS is better than a crash.
-    }
-  }
-
-  /// Chef taps CONFIRM — silence the alert without changing meal status.
-  void _acknowledgeSound() {
-    _newMealSound.stop();
-    if (mounted) setState(() => _soundAcknowledged = true);
-  }
-
-  void _stopSoundIfNothingPending() {
-    if (!mounted) return;
-    // Respect the chef's explicit acknowledge — don't re-trigger the sound
-    // on the next auto-refresh (every 20s) just because meals are still in
-    // the queue. The flag resets only when a genuinely NEW meal arrives
-    // (_playNewMealSound sets _soundAcknowledged = false).
-    if (_soundAcknowledged) return;
-    if (!context.read<SubscriptionAdminProvider>().hasMealsAwaitingPrep) {
-      _newMealSound.stop();
-    }
-  }
-
   @override
   void dispose() {
     _tickTimer?.cancel();
     _tabs.dispose();
     final p = context.read<SubscriptionAdminProvider>();
-    p.onNewMeal = null;
-    p.removeListener(_stopSoundIfNothingPending);
     p.stopAutoRefresh();
     super.dispose();
   }
@@ -230,24 +188,31 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
         active.where((m) => m['status'] == 'prepared').toList();
 
     // Totals for the kitchen header.
-    int toPrepare = 0, prepared = 0;
-    final byPref = <String, int>{};
-    // Veg/non-veg headcount by mealtime — a whole-day veg/non-veg member
-    // counts toward both morning and evening; a mixed member counts toward
-    // whichever slot their morning_preference/evening_preference says.
-    int morningVeg = 0, morningNonVeg = 0, eveningVeg = 0, eveningNonVeg = 0;
-    int wholeDayVeg = 0, wholeDayNonVeg = 0;
+    int totalMeals = 0, prepared = 0;
     for (final m in active) {
       final sub = (m['subscriptions'] as Map?)?.cast<String, dynamic>() ?? {};
-      // Excluded from the kitchen's aggregate totals — a developer's test
-      // member still shows up as a card below (so the prep/dispatch flow is
-      // actually exercisable), just not in the real prep-count math.
       if (sub['is_test'] == true) continue;
       final n = _mealsOf(m);
-      toPrepare += n;
-      prepared += (m['prepared_count'] as num?)?.toInt() ?? 0;
+      totalMeals += n;
+      if (m['status'] == 'prepared') {
+        prepared += (m['prepared_count'] as num?)?.toInt() ?? n;
+      } else {
+        prepared += (m['prepared_count'] as num?)?.toInt() ?? 0;
+      }
+    }
+    // Remaining meals waiting to be prepared. When all are prepared, this is 0.
+    final toPrepare = (totalMeals - prepared).clamp(0, double.infinity).toInt();
+
+    final byPref = <String, int>{};
+    int morningVeg = 0, morningNonVeg = 0, eveningVeg = 0, eveningNonVeg = 0;
+    int wholeDayVeg = 0, wholeDayNonVeg = 0;
+    for (final m in toPrepareList) {
+      final sub = (m['subscriptions'] as Map?)?.cast<String, dynamic>() ?? {};
+      if (sub['is_test'] == true) continue;
+      final remaining = _mealsOf(m) - ((m['prepared_count'] as num?)?.toInt() ?? 0);
+      if (remaining <= 0) continue;
       final prefKey = (sub['food_preference'] ?? 'other') as String;
-      byPref[prefKey] = (byPref[prefKey] ?? 0) + n;
+      byPref[prefKey] = (byPref[prefKey] ?? 0) + remaining;
 
       if (prefKey == 'mixed') {
         final morning = (sub['morning_preference'] ?? '') as String;
@@ -272,7 +237,6 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
         eveningNonVeg++;
       }
     }
-    final pendingCount = toPrepare - prepared;
 
     final d = p.kdsDate;
     final dateLabel =
@@ -338,7 +302,7 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
         children: [
           Column(
             children: [
-              _summaryBar(toPrepare, prepared, pendingCount, byPref, {
+              _summaryBar(toPrepare, prepared, totalMeals, byPref, {
                 'MORNING VEG': morningVeg,
                 'MORNING NON-VEG': morningNonVeg,
                 'EVENING VEG': eveningVeg,
@@ -369,7 +333,7 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
     );
   }
 
-  Widget _summaryBar(int toPrepare, int prepared, int pending,
+  Widget _summaryBar(int toPrepare, int prepared, int total,
       Map<String, int> byPref, Map<String, int> vegBreakdown) {
     Widget stat(String label, String value, Color color) => Expanded(
           child: Container(
@@ -407,7 +371,7 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
             children: [
               stat('TO PREPARE', '$toPrepare', Colors.blue[800]!),
               stat('PREPARED', '$prepared', Colors.green[700]!),
-              stat('PENDING', '$pending', Colors.red[700]!),
+              stat('TOTAL', '$total', Colors.purple[700]!),
             ],
           ),
           if (byPref.isNotEmpty)
@@ -463,9 +427,6 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
       'status': fullyDone ? 'prepared' : 'confirmed',
       if (fullyDone) 'prepared_at': DateTime.now().toIso8601String(),
     });
-    // Immediately silence the ringtone when a meal is fully prepared —
-    // don't wait for the async fetchMeals() → listener chain.
-    if (fullyDone) _newMealSound.stop();
   }
 
   /// One-tap "mark all done" — sets prepared_count = total and status to
@@ -872,30 +833,6 @@ class _SubscriptionChefPageState extends State<SubscriptionChefPage>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // ── CONFIRM button — silence the alert sound ──────────
-                if (!isPrepared && !_soundAcknowledged)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Material(
-                      color: Colors.orange[700],
-                      borderRadius: BorderRadius.circular(6),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(6),
-                        onTap: _acknowledgeSound,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          child: Text('CONFIRM',
-                              style: GoogleFonts.chivo(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5)),
-                        ),
-                      ),
-                    ),
-                  ),
-
                 // ── Dish completion stepper (Image 1 style) ───────────
                 _stepperControl(
                   valueText: '$done / $total',
