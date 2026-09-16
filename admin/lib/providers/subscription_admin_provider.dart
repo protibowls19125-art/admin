@@ -765,11 +765,34 @@ class SubscriptionAdminProvider extends ChangeNotifier {
       if (paymentMethod != null && paymentMethod.isNotEmpty) {
         insertData['payment_method'] = paymentMethod;
       }
-      final res = await _client
-          .from('manual_subscription_entries')
-          .insert(insertData)
-          .select('id')
-          .single();
+
+      Map<String, dynamic> res;
+      try {
+        res = await _client
+            .from('manual_subscription_entries')
+            .insert(insertData)
+            .select('id')
+            .single();
+      } catch (insertErr) {
+        // If 'payment_method' column doesn't exist yet in the database schema cache,
+        // retry insert without it and tag payment method into notes so data is preserved.
+        if (insertData.containsKey('payment_method')) {
+          final pm = insertData.remove('payment_method') as String?;
+          if (pm != null && pm.isNotEmpty) {
+            final curNotes = (insertData['notes'] as String?) ?? '';
+            insertData['notes'] = curNotes.isEmpty
+                ? '[${pm.toUpperCase()}]'
+                : '[${pm.toUpperCase()}] $curNotes';
+          }
+          res = await _client
+              .from('manual_subscription_entries')
+              .insert(insertData)
+              .select('id')
+              .single();
+        } else {
+          rethrow;
+        }
+      }
       final entryId = res['id'] as String;
 
       // When the manager picked dishes, also create a meal_confirmations row
@@ -785,7 +808,7 @@ class SubscriptionAdminProvider extends ChangeNotifier {
       final specialInstructions = (fields['notes'] as String?)?.trim() ?? '';
       String? mealConfirmationId;
       if (dishIds != null && dishIds.isNotEmpty && mealDate != null) {
-        final mcRes = await _client.from('meal_confirmations').insert({
+        final mcData = <String, dynamic>{
           'meal_date': mealDate,
           'status': 'confirmed',
           'pushed_to_kitchen': autoPush,
@@ -798,9 +821,22 @@ class SubscriptionAdminProvider extends ChangeNotifier {
                   ? fields['customer_name'].trim()
                   : 'manual entry'),
           'manual_entry_id': entryId,
-          // manual entries don't have a subscription_id — they're one-off
-          // meals added by a manager for non-members (walk-ins, trials, etc.)
-        }).select('id').single();
+        };
+        Map<String, dynamic> mcRes;
+        try {
+          mcRes = await _client
+              .from('meal_confirmations')
+              .insert(mcData)
+              .select('id')
+              .single();
+        } catch (_) {
+          mcData.remove('manual_entry_id');
+          mcRes = await _client
+              .from('meal_confirmations')
+              .insert(mcData)
+              .select('id')
+              .single();
+        }
         mealConfirmationId = mcRes['id'] as String;
       }
       await fetchManualEntries();

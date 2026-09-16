@@ -68,3 +68,10 @@ DROP POLICY IF EXISTS "manual_entries_authenticated_select" ON public.manual_sub
 CREATE POLICY "manual_entries_authenticated_select" ON public.manual_subscription_entries
   FOR SELECT TO authenticated
   USING (true);
+
+-- 8. Add payment_method column to manual_subscription_entries
+ALTER TABLE public.manual_subscription_entries
+  ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'cod';
+
+-- Refresh PostgREST schema cache
+NOTIFY pgrst, 'reload schema';
